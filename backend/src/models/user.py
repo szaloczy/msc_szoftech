@@ -1,6 +1,5 @@
-import uuid
 from typing import TypedDict
-
+import uuid
 
 class User(TypedDict):
     id: str
@@ -15,6 +14,9 @@ def add_user(user_name, user_id) -> User:
     new_user: User = {"id": user_id, "name": user_name}
     users.append(new_user)
     return new_user
+
+def create_user(user_name: str) -> User:
+    return User(id=str(uuid.uuid4()), name=user_name)
 
 def remove_user(user_id) -> bool:
     global users
