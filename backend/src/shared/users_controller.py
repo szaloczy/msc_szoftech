@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from backend.src.shared.user_auth_service import generate_unique_id, add_user, get_user, remove_user
+from backend.src.models.user import get_user, generate_unique_id, add_user, remove_user
 
 users_controller = Blueprint('users_controller', __name__)
 
