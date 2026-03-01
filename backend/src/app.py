@@ -2,7 +2,7 @@ import asyncio
 import threading
 from flask import Flask, jsonify
 from websockets.asyncio.server import serve
-from src.shared.user_auth_service import set_user_to_connection
+from src.models import User, set_user_to_connection
 
 from src.shared.users_controller import users_controller
 
