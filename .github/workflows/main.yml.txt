@@ -1,0 +1,31 @@
+name: Discord message on Pull Request
+on: [pull_request, pull_request_review, issue_comment, push]
+jobs:
+  # ID of our job
+  webhook-request:
+    # OS to run our job on
+    runs-on: ubuntu-latest
+    steps:
+    - name: Send a request to webhook
+      run: |
+        RESPONSE=$(curl -H "Content-Type: application/json" -X POST -d '{
+        "username": "GitHub",
+        "content": "@everyone",
+        "embeds": [
+          {
+            "type": "rich",
+            "title": "PUSH | MERGE to MAIN",
+            "description": "New changes on Msc_szoftech repository by ${{ github.actor }}",
+            "color": 2123412,
+            "thumbnail": {
+              "url": "https://i.ytimg.com/vi/tnRQYoJVaW4/hqdefault.jpg"
+            },
+            "author": {
+              "name": "${{ github.actor }}",
+              "url": "https://github.com/${{ github.actor_id }}",
+              "icon_url": "https://i.ytimg.com/vi/tnRQYoJVaW4/hqdefault.jpg"
+            },
+            "url": "https://github.com/***"
+          }
+        ]
+        }' ${{ secrets.WEBHOOK_URL }})
