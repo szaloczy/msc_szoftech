@@ -30,5 +30,3 @@ def get_user(user_id) -> User|None:
             return user
     return None
 
-def set_user_to_connection(data, client):
-    pass

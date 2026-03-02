@@ -2,8 +2,6 @@ from typing import TypedDict
 import uuid
 import random
 
-COLORS = ["red", "white", "green"]
-VALUES = list(range(1, 11))
 
 class CardModel(TypedDict):
     id: str
@@ -11,10 +9,10 @@ class CardModel(TypedDict):
     value: str
 
 
-def generate_cards() -> list[CardModel]:
+def generate_cards(colors: list[str], values: list[int]) -> list[CardModel]:
     cards = []
-    for color in COLORS:
-        for value in VALUES:
+    for color in colors:
+        for value in values:
             for _ in range(3):
                 cards.append(CardModel(
                     id= str(uuid.uuid4()),
