@@ -30,3 +30,19 @@ def get_user(user_id) -> User|None:
             return user
     return None
 
+async def set_user_to_connection(data, client):
+    try:
+        user_id = data.get("user_id")
+        user = get_user(user_id)
+
+        if client and user:
+            client['user_id'] = user_id
+            await client['connection'].send(json.dumps({"type":"Auth", "success": True, "user_id": user_id, "user_name": user.get("name") }))
+        else:
+            print(f"User {user_id} not found")
+            await client['connection'].send(json.dumps({"type":"Auth", "success": False, "message": "User not found", "user_id": user_id }))
+    except Exception as e:
+        print(f"Error in set_user_to_connection: {e}")
+        await client['connection'].send(json.dumps({"type":"Auth", "success": False, "message": "An error occurred during authentication" }))
+
+

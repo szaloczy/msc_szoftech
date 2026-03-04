@@ -1,6 +1,6 @@
 # MSc Szoftech – Card Games
 
-Teljes stack projekt Flask backenddel és Angular frontenddel.
+Full stack projekt Flask backenddel és Angular frontenddel.
 A rendszer célja kártyajáték módok megjelenítése és valós idejű kommunikáció WebSocketen keresztül.
 
 ## Projekt struktúra
