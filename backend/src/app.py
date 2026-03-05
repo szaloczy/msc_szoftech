@@ -1,16 +1,17 @@
 import asyncio
 import threading
-from flask import Flask, jsonify
-from webosckets.asyncio.server import ServerConnection
-from websockets.asyncio.server import serve
-from src.models import User, set_user_to_connection
+import json
+import websockets
 
-from serc.websocket_controller import connected_clients
+from flask import Flask, jsonify
+from websockets.sync.server import ServerConnection
+
+from src.models.user import set_user_to_connection
 from src.shared.users_controller import users_controller
+from src.webocket_controller import connected_clients
 
 # Flask app setup
 app = Flask(__name__)
-connected_clients = set()
 loop = None
 
 _message_handlers = {
@@ -30,34 +31,62 @@ async def handle_connection(websocket: ServerConnection):
 
     try:
         async for message in websocket:
-            print(f"Received message: {message}")
-            # Here you would parse the message and call the appropriate handler
-            # For example, if the message is JSON, you could do:
-            # data = json.loads(message)
-            # handler = _message_handlers.get(data.get("type"))
-            # if handler:
-            #     await handler(data, websocket)
-    except Exception as e:
-        print(f"Error in handle_connection: {e}")
+            client = None
+            try:
+                data = json.loads(message)
+                print(f"Received WS message: {data}")
+
+                #Get corresponding client
+                client = next(
+                    (client for client in connected_clients if client.get("connection") == websocket),
+                    None
+                )
+
+                message_type = data["type"]
+
+                handler = _message_handlers.get(message_type)
+                if handler:
+                    await handler(data, client)
+                else:
+                    print(f"Unhandled message type {message_type}")
+                    await websocket.send(json.dumps({"type": "error", "message": "Invalid message type"}))
+
+            except json.JSONDecodeError:
+                await websocket.send(json.dumps({"type": "error", "error": "Invalid JSON format"}))
+            except Exception as e:
+                print(f"Unhandled error while processing websocket message: {e}")
+
+    except websockets.ConnectionClosed:
+        print("Client disconnected")
+    finally:
+        connected_clients.remove(
+            next(
+                (client for client in connected_clients if client.get("connection") == websocket),
+            None,
+            )
+        )
 
 
-def start_ws():
-    async def main():
-        print("WebSocket server running on ws://localhost:8765")
-        async with serve(websocket_handler, "localhost", 8765):
-            await asyncio.Future()  # run forever
 
-    asyncio.run(main())
+async def start_ws():
+    global loop
+    loop = asyncio.get_event_loop()
+    async with websockets.serve(handle_connection, "0.0.0.0", 8765):
+        print("Websocket Server started on ws://0.0.0.0:8765")
+        await asyncio.Future() # Run forever
 
-
+def run_flask():
+    app.run(host="0.0.0.0", port=5000, debug=False)
 @app.route("/")
 def home():
     return jsonify({"message": "Flask running"})
 
 
 if __name__ == "__main__":
-    ws_thread = threading.Thread(target=start_ws, daemon=True)
-    ws_thread.start()
+    #Start Flask in separate thread
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
 
-    print("Starting Flask on http://localhost:5000")
-    app.run(port=5000, use_reloader=False)
+    #Run websocket server in the main thread
+    asyncio.run(start_ws())
