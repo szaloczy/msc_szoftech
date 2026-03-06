@@ -2,7 +2,7 @@ import asyncio
 import threading
 import json
 import websockets
-
+from flask_cors import CORS
 from flask import Flask, jsonify
 from websockets.sync.server import ServerConnection
 
@@ -13,6 +13,7 @@ from src.webocket_controller import connected_clients
 # Flask app setup
 app = Flask(__name__)
 loop = None
+CORS(app)
 
 _message_handlers = {
     "userAuth": set_user_to_connection,

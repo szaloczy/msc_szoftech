@@ -6,7 +6,7 @@ users_controller = Blueprint('users_controller', __name__)
 
 def create_response(data=None, error=None, status=200):
     return jsonify({
-        "succes": error is None,
+        "success": error is None,
         "data": data,
         "error": error
     }),status
