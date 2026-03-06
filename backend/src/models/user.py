@@ -7,8 +7,13 @@ from typing import TypedDict
 class User(TypedDict):
     id: str
     name: str
+    lobby_leader: bool = False
 
 users:list[User] = []
+
+def lobbyLeader(user_id) -> bool:
+    user = get_user(user_id)
+    user["lobby_leader"] = not user["lobby_leader"]
 
 def generate_unique_id() -> str:
     return str(uuid.uuid4())

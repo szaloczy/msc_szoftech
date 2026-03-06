@@ -4,6 +4,7 @@ from typing import TypedDict, Optional
 from websockets.asyncio.server import ServerConnection
 
 class Client(TypedDict):
+    lobby_id: str
     connection: ServerConnection
     user_id: Optional[str]
 

@@ -6,6 +6,7 @@ from flask_cors import CORS
 from flask import Flask, jsonify
 from websockets.sync.server import ServerConnection
 
+from backend.src.models.lobby import create_lobby, join_lobby, leave_lobby
 from src.models.user import set_user_to_connection
 from src.shared.users_controller import users_controller
 from src.webocket_controller import connected_clients
@@ -17,6 +18,9 @@ CORS(app)
 
 _message_handlers = {
     "userAuth": set_user_to_connection,
+    "joinLobby": join_lobby,
+    "leaveLobby": leave_lobby,
+    "createLobby": create_lobby,
 }
 # Register Blueprints
 app.register_blueprint(users_controller)
@@ -28,8 +32,6 @@ async def handle_connection(websocket: ServerConnection):
         "user_id": None
     })
     print("someone connected...")
-
-
     try:
         async for message in websocket:
             client = None
