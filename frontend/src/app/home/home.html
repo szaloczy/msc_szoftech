@@ -1,59 +1,74 @@
-<section class="top-bar">
-    <div class="title">Choose Your Game</div>
-    <div class="user-controls">
-        <span class="username">{{ userService.displayName }}</span>
+<div class="home-layout">
+    <section class="top-bar">
+        <div class="title">Choose Your Game</div>
+        <div class="user-controls">
+            <span class="username">{{ userService.displayName }}</span>
 
-        @if (!userService.currentUser()) {
-            <button class="header-login-btn" (click)="openModal()">Login</button>
-        }
-    </div>
-</section>
+            @if (!userService.currentUser()) {
+                <button class="header-login-btn" (click)="openModal()">Login</button>
+            }
+        </div>
+    </section>
+        <main class="main-content">
+            <section class="card-container">
+                @for (game of games; track game.id) {
+                    <div class="card" (click)="selectGame()">
+                        <h2>{{ game.name }}</h2>
+                        <p>{{ game.description }}</p>
+                        <div class="details-box">
+                            <div class="detail"><i class="fa-solid fa-users"></i> {{ game.player }}</div>
+                            <div class="detail"><i class="fa-solid fa-clock"></i> {{ game.duration }}</div>
+                        </div>
+                    </div>
+                }
+            </section>
 
-<section class="card-container">
-    @for(game of games; track game.id) {
-        <div class="card">
-            <h2>{{ game.name }}</h2>
-            <p>{{ game.description }}</p>
-            <div class="details-box">
-                <div class="detail"><i class="fa-solid fa-users"></i> {{game.player}}</div>
-                <div class="detail"><i class="fa-solid fa-clock"></i> {{game.duration}}</div>
+            @if (isGameDetailsSidebarOpen) {
+                <aside class="game-details-sidebar">
+                    <div class="sidebar-top-section">
+                        <h1>###GAME NAME###</h1>
+                        <p>###GAME DESCRIPTION###</p>
+                    </div>
+                    <div class="sidebar-bottom-section">
+                        <button>create room</button>
+                    </div>
+                </aside>
+            }
+        </main>
+   
+    <section class="bottom-bar">
+        <input type="text" value="room code">
+        <button>Join Room</button>
+    </section>
+
+    @if (isModalOpen) {
+        <div class="modal-overlay" (click)="closeModal()">
+
+            <div class="modal-container" (click)="$event.stopPropagation()">
+
+                <div class="modal-header">
+                    <h2>Login required</h2>
+                    <button class="close-x" (click)="closeModal()">X</button>
+                </div>
+
+                <div class="modal-body">
+                    <p>Give yourself a name, which is 3-50 characters long.</p>
+                    <input type="text"
+                        [(ngModel)]="newUsername"
+                        (keyup.enter)="saveUser()"
+                        maxlength="50">
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+                    <button class="btn-login"
+                            (click)="saveUser()"
+                            [disabled]="newUsername.trim().length < 3">
+                        Login
+                    </button>
+                </div>
+
             </div>
         </div>
     }
-</section>
-
-<section class="bottom-bar">
-    <input type="text" value="room code">
-    <button>Join Room</button>
-</section>
-
-@if (isModalOpen) {
-    <div class="modal-overlay" (click)="closeModal()">
-
-        <div class="modal-container" (click)="$event.stopPropagation()">
-
-            <div class="modal-header">
-                <h2>Login required</h2>
-                <button class="close-x" (click)="closeModal()">X</button>
-            </div>
-
-            <div class="modal-body">
-                <p>Give yourself a name, which is 3-50 characters long.</p>
-                <input type="text"
-                       [(ngModel)]="newUsername"
-                       (keyup.enter)="saveUser()"
-                       maxlength="50">
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn-cancel" (click)="closeModal()">Cancel</button>
-                <button class="btn-login"
-                        (click)="saveUser()"
-                        [disabled]="newUsername.trim().length < 3">
-                    Login
-                </button>
-            </div>
-
-        </div>
-    </div>
-}
+</div>

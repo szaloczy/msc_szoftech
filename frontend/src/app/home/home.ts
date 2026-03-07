@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import { GameMode } from '../types';
 import {UserService} from '../services/user.service';
 import {FormsModule} from '@angular/forms';
@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home {
+export class Home implements OnInit{
   userService = inject(UserService);
   games : GameMode[] =[
     { id: '1', name: 'Spicy', description: 'card games with a spicy twist', duration: '30 mins', player: 4 },
@@ -21,6 +21,11 @@ export class Home {
 
   newUsername: string = '';
   isModalOpen: boolean = false;
+  isGameDetailsSidebarOpen: boolean = true;
+
+  ngOnInit(): void {
+    
+  }
 
   openModal() {
     this.isModalOpen = true;
@@ -40,6 +45,10 @@ export class Home {
         error: (err) => console.error('Error while creating user:', err)
       });
     }
+  }
+
+  selectGame() {
+
   }
 
 }
