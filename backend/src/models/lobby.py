@@ -2,12 +2,12 @@ from typing import TypedDict
 import uuid
 
 from flask import json
-from user import UserModel, get_user
+from models.user import User, get_user
 
 class LobbyModel(TypedDict):
     id: str
     gameId: str
-    users: list[UserModel]
+    users: list[User]
     joinCode: str
 
 lobbies: list[LobbyModel] = []

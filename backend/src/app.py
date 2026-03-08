@@ -6,10 +6,10 @@ from flask_cors import CORS
 from flask import Flask, jsonify
 from websockets.sync.server import ServerConnection
 
-from backend.src.models.lobby import create_lobby, join_lobby, leave_lobby
-from src.models.user import set_user_to_connection
-from src.shared.users_controller import users_controller
-from src.webocket_controller import connected_clients
+from models.lobby import create_lobby, join_lobby, leave_lobby
+from models.user import set_user_to_connection
+from shared.users_controller import users_controller
+from webocket_controller import connected_clients
 
 # Flask app setup
 app = Flask(__name__)
