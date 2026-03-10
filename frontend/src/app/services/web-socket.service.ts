@@ -1,37 +1,57 @@
 import { Injectable, signal } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WebSocketService {
-  socket: WebSocket | null = null;
+  private socket: WebSocket | null = null;
+  private readonly RECONNECTIONTERVAL = 5000; // 5 sec
+  private connectionReady = new BehaviorSubject<boolean>(false);
+  public connectionReady$ = this.connectionReady.asObservable();
 
-  private _serverMessage = signal('');
-  readonly serverMessage = this._serverMessage.asReadonly();
+  public get isConnectionReady(): boolean {
+    return this.connectionReady.value;  
+  }
 
-  connect() {
-    this.socket = new WebSocket('ws://localhost:8765');
+    //Some kind of message handler for shcema type messages
+    /*
+    messageHnadlers = {}
+    */
 
+   connect() {
+    this.connectionReady.next(false);
+    this.socket = new WebSocket('/ws');
     
-
     this.socket.onopen = () => {
-      console.log('WebSocket connection opened');
-    }
+      this.connectionReady.next(true);
+      console.log('WebSocket connection established');
+    };
+    
+   this.socket.onmessage = (event) => {
+      console.log('Received message:', event.data);
+      // Handle incoming messages here
+    };
 
-    this.socket.onmessage = (msg) => {
-      this._serverMessage.set(String(msg.data));
-    }
+
+    this.socket.onclose = () => {
+      this.connectionReady.next(false);
+      this.reconnect();
+    };
 
     this.socket.onerror = (error) => {
       console.error('WebSocket error:', error);
-    }
+      this.connectionReady.next(false);
+    };
   }
 
-  sendMessage(message: string) {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(message);
-    } else {
-      console.error('WebSocket is not open. Unable to send message.');
-    }
+  private reconnect() {
+    setTimeout(() => {
+      console.log("Lost Websocket. Reconnecting...");
+      this.connect();
+    }, this.RECONNECTIONTERVAL);
   }
+
+
+
 }

@@ -3,6 +3,7 @@ import { GameMode } from '../types';
 import {UserService} from '../services/user.service';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
+import { details } from '../game_details';
 
 @Component({
   selector: 'app-home',
@@ -19,13 +20,14 @@ export class Home implements OnInit{
     { id: '3', name: 'Blackjack', description: 'popular casino card game', duration: '15 mins', player: 2 },
   ]
 
+  readonly gameKeys = Object.keys(details["games"])
+
   newUsername: string = '';
   isModalOpen: boolean = false;
-  isGameDetailsSidebarOpen: boolean = true;
+  selectedGameKey: string = '';
+  isGameDetailsSidebarOpen: boolean = false;
 
-  ngOnInit(): void {
-    
-  }
+  ngOnInit(): void {}
 
   openModal() {
     this.isModalOpen = true;
@@ -47,8 +49,13 @@ export class Home implements OnInit{
     }
   }
 
-  selectGame() {
+  selectGame(gameKey: string) {
+    this.isGameDetailsSidebarOpen = !this.isGameDetailsSidebarOpen;
+    this.selectedGameKey = gameKey;
+  }
 
+  getGameDetails(key: string) {
+    return details.games[key as keyof typeof details.games];
   }
 
 }

@@ -11,13 +11,12 @@
     </section>
         <main class="main-content">
             <section class="card-container">
-                @for (game of games; track game.id) {
-                    <div class="card" (click)="selectGame()">
-                        <h2>{{ game.name }}</h2>
-                        <p>{{ game.description }}</p>
+                @for (key of gameKeys; track key) {
+                    <div class="card" (click)="selectGame( key )">
+                        <h2>{{ getGameDetails(key).title }}</h2>
                         <div class="details-box">
-                            <div class="detail"><i class="fa-solid fa-users"></i> {{ game.player }}</div>
-                            <div class="detail"><i class="fa-solid fa-clock"></i> {{ game.duration }}</div>
+                            <div class="detail"><i class="fa-solid fa-users"></i> {{ getGameDetails(key).players }}</div>
+                            <div class="detail"><i class="fa-solid fa-clock"></i> {{ getGameDetails(key).estimatedTime }}</div>
                         </div>
                     </div>
                 }
@@ -26,8 +25,8 @@
             @if (isGameDetailsSidebarOpen) {
                 <aside class="game-details-sidebar">
                     <div class="sidebar-top-section">
-                        <h1>###GAME NAME###</h1>
-                        <p>###GAME DESCRIPTION###</p>
+                        <h1>{{ getGameDetails(selectedGameKey).title }}</h1>
+                        <p>{{ getGameDetails(selectedGameKey).description }}</p>
                     </div>
                     <div class="sidebar-bottom-section">
                         <button>create room</button>
