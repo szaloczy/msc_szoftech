@@ -8,7 +8,7 @@ export interface GameMode {
 
 export interface User {
     id: string;
-    name: string;
+    username: string;
 }
 
 export interface UserApiResponse {

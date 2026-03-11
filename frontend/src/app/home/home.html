@@ -3,10 +3,6 @@
         <div class="title">Choose Your Game</div>
         <div class="user-controls">
             <span class="username">{{ userService.displayName }}</span>
-
-            @if (!userService.currentUser()) {
-                <button class="header-login-btn" (click)="openModal()">Login</button>
-            }
         </div>
     </section>
         <main class="main-content">
@@ -29,7 +25,7 @@
                         <p>{{ getGameDetails(selectedGameKey).description }}</p>
                     </div>
                     <div class="sidebar-bottom-section">
-                        <button>create room</button>
+                        <button (click)="createRoom()">create room</button>
                     </div>
                 </aside>
             }

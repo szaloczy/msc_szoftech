@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import { GameMode } from '../types';
 import {UserService} from '../services/user.service';
 import {FormsModule} from '@angular/forms';
@@ -21,6 +21,7 @@ export class Home implements OnInit{
   ]
 
   readonly gameKeys = Object.keys(details["games"])
+  readonly isAuthenticated = signal(false);
 
   newUsername: string = '';
   isModalOpen: boolean = false;
@@ -47,6 +48,10 @@ export class Home implements OnInit{
         error: (err) => console.error('Error while creating user:', err)
       });
     }
+  }
+
+  createRoom() {
+    this.openModal();
   }
 
   selectGame(gameKey: string) {

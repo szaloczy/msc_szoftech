@@ -52,6 +52,16 @@ export class WebSocketService {
     }, this.RECONNECTIONTERVAL);
   }
 
+  public sendMessage(message: object) {
+    if(!this.socket) {
+      console.error('WebSocket is not initialized');
+      return;
+    }
 
-
+    if (this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify(message));
+    } else {
+      console.error('Websocket is not open. Ready state: ', this.socket.readyState);
+    } 
+  }
 }
