@@ -49,7 +49,7 @@
                 <div class="modal-body">
                     <p>Give yourself a name, which is 3-50 characters long.</p>
                     <input type="text"
-                        [(ngModel)]="newUsername"
+                        [(ngModel)]="username"
                         (keyup.enter)="saveUser()"
                         maxlength="50">
                 </div>
@@ -58,7 +58,7 @@
                     <button class="btn-cancel" (click)="closeModal()">Cancel</button>
                     <button class="btn-login"
                             (click)="saveUser()"
-                            [disabled]="newUsername.trim().length < 3">
+                            [disabled]="username.trim().length < 3">
                         Login
                     </button>
                 </div>

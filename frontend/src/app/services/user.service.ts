@@ -11,10 +11,9 @@ import { WebSocketService } from './web-socket.service';
 export class UserService {
   private readonly STORAGE_KEY = 'currentUser';
   private readonly websocketService = inject(WebSocketService);
+  private readonly http = inject(HttpClient);
 
   readonly currentUser = signal<User | null>(this.loadFromStorage());
-
-  constructor(private http: HttpClient) {}
 
   get displayName(): string {
     return this.currentUser()?.username ?? 'Guest';
