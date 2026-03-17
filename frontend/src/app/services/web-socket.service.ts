@@ -1,5 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { websocketMessageSchemaTypes, WebSocketMessageTypes } from '../types';
+import { ZodLiteral } from 'zod';
+import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +33,30 @@ export class WebSocketService {
     
    this.socket.onmessage = (event) => {
       console.log('Received message:', event.data);
-      // Handle incoming messages here
+      try {
+        const message = JSON.parse(event.data);
+
+        if(!message.type) {
+          throw new Error('Message type is missing from the payload');
+        }
+
+        const relatedType = Object.entries(websocketMessageSchemaTypes).find(
+          ([, schema]) => (schema.shape.type as ZodLiteral<string>).value === message.type
+        );
+
+        if(relatedType) {
+          const messageType = relatedType[0] as keyof WebSocketMessageTypes;
+          const schema = websocketMessageSchemaTypes[messageType];
+          const result = schema.safeParse(message);
+
+          if (result.success) {
+            // Handle the message based on its type
+          }
+        }
+
+      } catch (error) {
+        console.error('Failed to parse WebSocket message:', event.data, error);
+      }
     };
 
 
@@ -43,6 +69,7 @@ export class WebSocketService {
       console.error('WebSocket error:', error);
       this.connectionReady.next(false);
     };
+
   }
 
   private reconnect() {
