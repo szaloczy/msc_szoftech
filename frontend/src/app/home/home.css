@@ -54,7 +54,6 @@
     background-color: #fff0f0;
 }
 
-
 .title {
     flex: 1;
     font-size: 24px;
@@ -65,6 +64,10 @@
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     align-content: start;
+}
+
+.card h2 {
+    text-transform: uppercase;
 }
 
 .card {

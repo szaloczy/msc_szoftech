@@ -3,21 +3,16 @@
         <div class="title">Choose Your Game</div>
         <div class="user-controls">
             <span class="username">{{ userService.displayName }}</span>
-
-            @if (!userService.currentUser()) {
-                <button class="header-login-btn" (click)="openModal()">Login</button>
-            }
         </div>
     </section>
         <main class="main-content">
             <section class="card-container">
-                @for (game of games; track game.id) {
-                    <div class="card" (click)="selectGame()">
-                        <h2>{{ game.name }}</h2>
-                        <p>{{ game.description }}</p>
+                @for (key of gameKeys; track key) {
+                    <div class="card" (click)="selectGame( key )">
+                        <h2>{{ getGameDetails(key).title }}</h2>
                         <div class="details-box">
-                            <div class="detail"><i class="fa-solid fa-users"></i> {{ game.player }}</div>
-                            <div class="detail"><i class="fa-solid fa-clock"></i> {{ game.duration }}</div>
+                            <div class="detail"><i class="fa-solid fa-users"></i> {{ getGameDetails(key).players }}</div>
+                            <div class="detail"><i class="fa-solid fa-clock"></i> {{ getGameDetails(key).estimatedTime }}</div>
                         </div>
                     </div>
                 }
@@ -26,11 +21,11 @@
             @if (isGameDetailsSidebarOpen) {
                 <aside class="game-details-sidebar">
                     <div class="sidebar-top-section">
-                        <h1>###GAME NAME###</h1>
-                        <p>###GAME DESCRIPTION###</p>
+                        <h1>{{ getGameDetails(selectedGameKey).title }}</h1>
+                        <p>{{ getGameDetails(selectedGameKey).description }}</p>
                     </div>
                     <div class="sidebar-bottom-section">
-                        <button>create room</button>
+                        <button (click)="createRoom()">create room</button>
                     </div>
                 </aside>
             }
@@ -54,7 +49,7 @@
                 <div class="modal-body">
                     <p>Give yourself a name, which is 3-50 characters long.</p>
                     <input type="text"
-                        [(ngModel)]="newUsername"
+                        [(ngModel)]="username"
                         (keyup.enter)="saveUser()"
                         maxlength="50">
                 </div>
@@ -63,7 +58,7 @@
                     <button class="btn-cancel" (click)="closeModal()">Cancel</button>
                     <button class="btn-login"
                             (click)="saveUser()"
-                            [disabled]="newUsername.trim().length < 3">
+                            [disabled]="username.trim().length < 3">
                         Login
                     </button>
                 </div>

@@ -1,8 +1,10 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, signal} from '@angular/core';
 import { GameMode } from '../types';
 import {UserService} from '../services/user.service';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
+import { details } from '../game_details';
+import { WebSocketService } from '../services/web-socket.service';
 
 @Component({
   selector: 'app-home',
@@ -11,21 +13,21 @@ import {CommonModule} from '@angular/common';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home implements OnInit{
+export class Home implements OnInit {
+
   userService = inject(UserService);
-  games : GameMode[] =[
-    { id: '1', name: 'Spicy', description: 'card games with a spicy twist', duration: '30 mins', player: 4 },
-    { id: '2', name: 'Uno', description: 'classic card game with colorful cards', duration: '20 mins', player: 4 },
-    { id: '3', name: 'Blackjack', description: 'popular casino card game', duration: '15 mins', player: 2 },
-  ]
+  websocketService = inject(WebSocketService);
 
-  newUsername: string = '';
+  readonly gameKeys = Object.keys(details["games"])
+  readonly isAuthenticated = signal(false);
+
+  username: string = '';
   isModalOpen: boolean = false;
-  isGameDetailsSidebarOpen: boolean = true;
+  selectedGameKey: string = '';
+  isGameDetailsSidebarOpen: boolean = false;
+  pendingAction: null | 'create' | 'join' = null;
 
-  ngOnInit(): void {
-    
-  }
+  ngOnInit(): void {}
 
   openModal() {
     this.isModalOpen = true;
@@ -33,13 +35,28 @@ export class Home implements OnInit{
 
   closeModal() {
     this.isModalOpen = false;
-    this.newUsername = '';
+    this.username = '';
   }
 
   saveUser() {
-    if (this.newUsername.trim().length >= 3 && this.newUsername.trim().length <= 50) {
-      this.userService.createUser(this.newUsername.trim()).subscribe({
+    if (this.username.trim().length >= 3 && this.username.trim().length <= 50) {
+      this.userService.createUser(this.username.trim()).subscribe({
         next: () => {
+          this.isAuthenticated.set(true);
+
+          this.websocketService.sendMessage({
+            type: 'auth',
+            username: this.username.trim(),
+            user_id: this.userService.currentUser()?.id
+          });
+
+          if (this.pendingAction === 'create') {
+            this.createRoom();
+          } else if (this.pendingAction === 'join') {
+            this.joinRoom();
+          }
+
+          this.pendingAction = null;
           this.closeModal();
         },
         error: (err) => console.error('Error while creating user:', err)
@@ -47,8 +64,32 @@ export class Home implements OnInit{
     }
   }
 
-  selectGame() {
+  createRoom() {
+    if (this.isAuthenticated()) {
+      this.websocketService.sendMessage(
+        { 
+          type: 'createLobby',
+          game: this.selectedGameKey
+        }
+      );
 
+    } else {
+      this.pendingAction = 'create';
+      this.openModal();
+    }
+  }
+
+  joinRoom() {
+    //TODO: implement join room logic
+  }
+
+  selectGame(gameKey: string) {
+    this.isGameDetailsSidebarOpen = !this.isGameDetailsSidebarOpen;
+    this.selectedGameKey = gameKey;
+  }
+
+  getGameDetails(key: string) {
+    return details.games[key as keyof typeof details.games];
   }
 
 }

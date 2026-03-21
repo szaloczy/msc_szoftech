@@ -1,37 +1,94 @@
 import { Injectable, signal } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { websocketMessageSchemaTypes, WebSocketMessageTypes } from '../types';
+import { ZodLiteral } from 'zod';
+import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WebSocketService {
-  socket: WebSocket | null = null;
+  private socket: WebSocket | null = null;
+  private readonly RECONNECTIONTERVAL = 5000; // 5 sec
+  private connectionReady = new BehaviorSubject<boolean>(false);
+  public connectionReady$ = this.connectionReady.asObservable();
 
-  private _serverMessage = signal('');
-  readonly serverMessage = this._serverMessage.asReadonly();
+  public get isConnectionReady(): boolean {
+    return this.connectionReady.value;  
+  }
 
-  connect() {
-    this.socket = new WebSocket('ws://localhost:8765');
+    //Some kind of message handler for shcema type messages
+    /*
+    messageHnadlers = {}
+    */
 
+   connect() {
+    this.connectionReady.next(false);
+    this.socket = new WebSocket('/ws');
     
-
     this.socket.onopen = () => {
-      console.log('WebSocket connection opened');
-    }
+      this.connectionReady.next(true);
+      console.log('WebSocket connection established');
+    };
+    
+   this.socket.onmessage = (event) => {
+      console.log('Received message:', event.data);
+      try {
+        const message = JSON.parse(event.data);
 
-    this.socket.onmessage = (msg) => {
-      this._serverMessage.set(String(msg.data));
-    }
+        if(!message.type) {
+          throw new Error('Message type is missing from the payload');
+        }
+
+        const relatedType = Object.entries(websocketMessageSchemaTypes).find(
+          ([, schema]) => (schema.shape.type as ZodLiteral<string>).value === message.type
+        );
+
+        if(relatedType) {
+          const messageType = relatedType[0] as keyof WebSocketMessageTypes;
+          const schema = websocketMessageSchemaTypes[messageType];
+          const result = schema.safeParse(message);
+
+          if (result.success) {
+            // Handle the message based on its type
+          }
+        }
+
+      } catch (error) {
+        console.error('Failed to parse WebSocket message:', event.data, error);
+      }
+    };
+
+
+    this.socket.onclose = () => {
+      this.connectionReady.next(false);
+      this.reconnect();
+    };
 
     this.socket.onerror = (error) => {
       console.error('WebSocket error:', error);
-    }
+      this.connectionReady.next(false);
+    };
+
   }
 
-  sendMessage(message: string) {
-    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-      this.socket.send(message);
-    } else {
-      console.error('WebSocket is not open. Unable to send message.');
+  private reconnect() {
+    setTimeout(() => {
+      console.log("Lost Websocket. Reconnecting...");
+      this.connect();
+    }, this.RECONNECTIONTERVAL);
+  }
+
+  public sendMessage(message: object) {
+    if(!this.socket) {
+      console.error('WebSocket is not initialized');
+      return;
     }
+
+    if (this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(JSON.stringify(message));
+    } else {
+      console.error('Websocket is not open. Ready state: ', this.socket.readyState);
+    } 
   }
 }
