@@ -1,5 +1,5 @@
 @if (userNameProvided()) {
-    <div class="container-fluid home-header">
+    <div class="container-fluid home-header mb-2">
         <div class="row p-2">
             <div class="col-8 title">
                 Choose Your Game
@@ -12,12 +12,6 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid">
-        <div class="row justify-content-center mt-3">
-            <div class="glitch-box"></div>
-        </div>
-    </div>
-
     <router-outlet></router-outlet>
 }@else {
     <div class="container-fluid">

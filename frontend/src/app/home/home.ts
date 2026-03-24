@@ -19,72 +19,39 @@ export class Home implements OnInit {
   websocketService = inject(WebSocketService);
 
   readonly gameKeys = Object.keys(details["games"])
-  readonly isAuthenticated = signal(false);
 
-  username: string = '';
   isModalOpen: boolean = false;
   selectedGameKey: string = '';
-  isGameDetailsSidebarOpen: boolean = false;
   pendingAction: null | 'create' | 'join' = null;
 
   ngOnInit(): void {}
 
-  openModal() {
-    this.isModalOpen = true;
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
-    this.username = '';
-  }
-
-  saveUser() {
-    if (this.username.trim().length >= 3 && this.username.trim().length <= 50) {
-      this.userService.createUser(this.username.trim()).subscribe({
-        next: () => {
-          this.isAuthenticated.set(true);
-
-          this.websocketService.sendMessage({
-            type: 'auth',
-            username: this.username.trim(),
-            user_id: this.userService.currentUser()?.id
-          });
-
-          if (this.pendingAction === 'create') {
-            this.createRoom();
-          } else if (this.pendingAction === 'join') {
-            this.joinRoom();
-          }
-
-          this.pendingAction = null;
-          this.closeModal();
-        },
-        error: (err) => console.error('Error while creating user:', err)
-      });
-    }
-  }
-
   createRoom() {
-    if (this.isAuthenticated()) {
-      this.websocketService.sendMessage(
+    this.websocketService.sendMessage({
+      type: 'auth',
+      username: this.userService.displayName,
+      user_id: this.userService.currentUser()?.id
+    });
+    this.websocketService.sendMessage(
         { 
           type: 'createLobby',
           game: this.selectedGameKey
         }
-      );
-
-    } else {
-      this.pendingAction = 'create';
-      this.openModal();
-    }
+    );
+    this.pendingAction = null;
   }
 
   joinRoom() {
+    this.websocketService.sendMessage({
+      type: 'auth',
+      username: this.userService.displayName,
+      user_id: this.userService.currentUser()?.id
+    });
     //TODO: implement join room logic
+    this.pendingAction = null;
   }
 
   selectGame(gameKey: string) {
-    this.isGameDetailsSidebarOpen = !this.isGameDetailsSidebarOpen;
     this.selectedGameKey = gameKey;
   }
 
