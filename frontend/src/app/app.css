@@ -1,0 +1,9 @@
+.home-header {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+.title{
+    font-weight: bold;
+    font-size: 24px;
+}

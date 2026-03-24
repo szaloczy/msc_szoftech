@@ -1,10 +1,4 @@
 <div class="home-layout">
-    <section class="top-bar">
-        <div class="title">Choose Your Game</div>
-        <div class="user-controls">
-            <span class="username">{{ userService.displayName }}</span>
-        </div>
-    </section>
         <main class="main-content">
             <section class="card-container">
                 @for (key of gameKeys; track key) {
@@ -30,12 +24,6 @@
                 </aside>
             }
         </main>
-   
-    <section class="bottom-bar">
-        <input type="text" value="room code">
-        <button>Join Room</button>
-    </section>
-
     @if (isModalOpen) {
         <div class="modal-overlay" (click)="closeModal()">
 

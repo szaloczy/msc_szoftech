@@ -3,6 +3,17 @@
     min-height: 100vh;
 }
 
+.home-header {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+.title{
+    font-weight: bold;
+    font-size: 24px;
+}
+
+
 .home-layout {
     min-height: 100vh;
     display: grid;
@@ -52,11 +63,6 @@
     padding: 12px;
     border-radius: 5px;
     background-color: #fff0f0;
-}
-
-.title {
-    flex: 1;
-    font-size: 24px;
 }
 
 .card-container {
