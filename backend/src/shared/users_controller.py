@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
-from models.user import get_user, generate_unique_id, add_user, remove_user
 
+from src.models.user import get_user, generate_unique_id, add_user, remove_user
 
 users_controller = Blueprint('users_controller', __name__)
 
@@ -24,10 +24,10 @@ def get_user_by_id(user_id):
 def create_user():
     body = request.get_json()
 
-    if not body or 'name' not in body:
-        return create_response(error="'name' field required!", status=400)
+    if not body or 'username' not in body:
+        return create_response(error="'username' field required!", status=400)
 
-    user_name = str(body['name']).strip()
+    user_name = str(body['username']).strip()
     if not user_name:
         return create_response(error="Name cannot be empty!", status=400)
 

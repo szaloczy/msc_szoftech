@@ -1,5 +1,4 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
-import { GameMode } from '../types';
 import {UserService} from '../services/user.service';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
@@ -18,6 +17,7 @@ export class Home implements OnInit {
   userService = inject(UserService);
   websocketService = inject(WebSocketService);
 
+  private readonly webSocketService = inject(WebSocketService);
   readonly gameKeys = Object.keys(details["games"])
   readonly isAuthenticated = signal(false);
 
@@ -27,7 +27,9 @@ export class Home implements OnInit {
   isGameDetailsSidebarOpen: boolean = false;
   pendingAction: null | 'create' | 'join' = null;
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.webSocketService.connect();
+  }
 
   openModal() {
     this.isModalOpen = true;

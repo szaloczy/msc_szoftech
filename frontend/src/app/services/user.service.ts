@@ -19,9 +19,9 @@ export class UserService {
     return this.currentUser()?.username ?? 'Guest';
   }
 
-  createUser(name: string) {
+  createUser(username: string) {
     return this.http
-      .post<UserApiResponse>('http://localhost:5000/api/users', { name })
+      .post<UserApiResponse>('http://localhost:5000/api/users', { username })
       .pipe(
         tap((res) => {
           if (res.success && res.data) {
