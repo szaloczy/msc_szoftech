@@ -1,7 +1,7 @@
-import {Component, inject, OnInit, signal} from '@angular/core';
-import {UserService} from '../services/user.service';
-import {FormsModule} from '@angular/forms';
-import {CommonModule} from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { UserService } from '../services/user.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { details } from '../game_details';
 import { WebSocketService } from '../services/web-socket.service';
 
@@ -69,7 +69,7 @@ export class Home implements OnInit {
   createRoom() {
     if (this.isAuthenticated()) {
       this.websocketService.sendMessage(
-        { 
+        {
           type: 'createLobby',
           game: this.selectedGameKey
         }
