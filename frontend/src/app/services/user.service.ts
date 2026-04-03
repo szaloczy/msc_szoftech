@@ -16,7 +16,8 @@ export class UserService {
   readonly currentUser = signal<User | null>(this.loadFromStorage());
 
   get displayName(): string {
-    return this.currentUser()?.username ?? 'Guest';
+    console.log('Current user:', this.currentUser());
+    return this.currentUser()?.name ?? 'Guest';
   }
 
   createUser(username: string) {
@@ -32,9 +33,9 @@ export class UserService {
   }
 
   startAuthProcess() {
-      const { id, username } = this.currentUser() || {};
+      const { id, name } = this.currentUser() || {};
 
-      if(id && username && username.length >= 3) {
+      if(id && name && name.length >= 3) {
         this.websocketService.sendMessage({ 
           type: 'auth', 
           user_id: id
@@ -51,11 +52,13 @@ export class UserService {
 
   private saveUser(user: User): void {
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
+  
     this.currentUser.set(user);
   }
 
   private loadFromStorage(): User | null {
     const stored = localStorage.getItem(this.STORAGE_KEY);
     return stored ? (JSON.parse(stored) as User) : null;
+
   }
 }
