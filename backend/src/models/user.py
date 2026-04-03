@@ -19,7 +19,7 @@ def generate_unique_id() -> str:
     return str(uuid.uuid4())
 
 def add_user(user_name, user_id) -> User:
-    new_user: User = {"id": user_id, "name": user_name}
+    new_user: User = {"id": user_id, "username": user_name}
     users.append(new_user)
     return new_user
 

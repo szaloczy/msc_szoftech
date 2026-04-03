@@ -1,3 +1,8 @@
+from enum import Enum
+
+from src.shared.deck import Deck
+
+
 class SpicyCardType(Enum):
     PEPPER = "pepper" # blue
     CHILI = "chili" #red

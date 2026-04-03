@@ -13,6 +13,9 @@ backend/.ruff_cache/
 backend/.coverage
 backend/htmlcov/
 
+__pycache__/
+*.pyc
+
 # -------------------------------
 # Angular / Node frontend
 # -------------------------------

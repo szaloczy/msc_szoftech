@@ -31,6 +31,7 @@ async def handle_connection(websocket: ServerConnection):
         "connection": websocket,
         "user_id": None
     })
+
     print("someone connected...")
     try:
         async for message in websocket:

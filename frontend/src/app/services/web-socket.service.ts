@@ -2,7 +2,6 @@ import { Injectable, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { websocketMessageSchemaTypes, WebSocketMessageTypes } from '../types';
 import { ZodLiteral } from 'zod';
-import { WebSocketMessage } from 'rxjs/internal/observable/dom/WebSocketSubject';
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +16,7 @@ export class WebSocketService {
     return this.connectionReady.value;  
   }
 
-    //Some kind of message handler for shcema type messages
+    //Some kind of message handler for schema type messages
     /*
     messageHnadlers = {}
     */
