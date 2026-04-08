@@ -1,6 +1,7 @@
 import asyncio
+import json
 
-from src.services.data_store_service import get_room_id
+from src.services.data_store_service import get_room_data, get_room_id
 from src.shared.game_room_service_interface import GameRoomService
 from src.spicy.spicy_room_data import SpicyRoomData
 from src.webocket_controller import send_websocket_message
@@ -44,15 +45,54 @@ class SpicyRoomService(GameRoomService):
             return msg
 
         if user_id:
-            # Build the personalized message for the target user.
             message = create_message(user_id)
             await send_websocket_message(message, user_id)
         else:
-            # Loop through all players in the room and send each a personalized message.
             await asyncio.gather(
                 *(send_websocket_message(create_message(player), player) for player in room.turns)
             )
 
+    @staticmethod
+    async def start_game(player_id: str, room_id: str) -> str:
+        """
+        Starts the game if all conditions are met.
+        """
+        room = get_room_data(room_id)
+        SpicyRoomService._validate_room_and_player(player_id, room)
+
+        # Initialize the game
+        room.current_turn = room.turns[0]  # Set the fist player as the current turn
+        room.points = {player: 0 for player in room.turns}  # Initialize points for each player
+        SpicyRoomService._distribute_cards(room)  # Distribute cards to all players
+
+        # Send ws message to all players
+        await SpicyRoomService.update_all_users(room)
+
+        return json.dumps({"status": "success", "message": "Game started successfully"})
+
+    @staticmethod
+    def _validate_room_and_player(player_id, room):
+        if player_id not in room.turns:
+            raise Exception("Player not in the room")
+
+        if len(room.turns) < 2:
+            raise Exception("Not enough players to start the game")
+
+        if room.current_turn is not None:
+            raise Exception("Game has already started")
+        
+    
+    @staticmethod
+    def _distribute_cards(game_data: SpicyRoomData) -> None:
+        """
+        Distributes 6 cards to every player from the deck when starting a game.
+        """
+        if len(game_data.deck.deck_cards) < len(game_data.turns) * 6:
+            raise Exception("Not enough cards in the deck")
+        else:
+            for player in game_data.turns:
+                game_data.player_cards[player] = game_data.deck.draw_cards(6)
+        
 
 def serialize_card(card):
         if card is None:

@@ -32,13 +32,13 @@ async def create_room(data, connection):
         # Check if the user is existing
     user = get_user(connection.get('user_id'))
     if not user:
-        await connection.get('connection').send(json.dumps(ErrorManager(ErrorTypes.USER_NOT_AUTHENTICATED).msg()))
+        await connection.get('connection').send(json.dumps({"type": "error", "message": "User does not exist"}))
         return
 
     # Max 100 rooms
     if len(data_store) >= 100:
-        await connection.get('connection').send(json.dumps(ErrorManager(ErrorTypes.MAX_ROOMS_REACHED).msg()))
-
+        await connection.get('connection').send(json.dumps({"type": "error", "message": "Maximum number of rooms reached"}))
+        return
     # Check if the room is public
     is_public = data.get('isPublic', False)
 
