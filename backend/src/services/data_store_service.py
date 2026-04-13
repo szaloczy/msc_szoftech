@@ -1,4 +1,5 @@
 import json
+import secrets
 from typing import TypeVar, Generic, Dict
 
 from flask import jsonify
@@ -60,7 +61,7 @@ async def create_room(data, connection):
 
     data_store[room_id].add_new_player(user.get("id"), user.get("name"))
 
-    await connection.get('connection').send(json.dumps({"type": "roomCreated", "roomId": room_id}))
+    await connection.get('connection').send(json.dumps({"type": "createLobby", "roomId": room_id}))
 
 async def join_room(data, connection):
     try:

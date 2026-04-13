@@ -1,0 +1,24 @@
+@if (showDialog) {
+  <div class="prompt-overlay">
+    <div class="prompt-dialog" [class.show]="showDialog">
+      <div class="prompt-header">
+        <h2 class="prompt-title">{{ title }}</h2>
+        <button class="close-button" (click)="onCancel()">×</button>
+      </div>
+      <div class="prompt-body">
+        <p class="prompt-message">{{ message }}</p>
+        <input
+          type="text"
+          id="prompt-input-field"
+          class="prompt-input"
+          [(ngModel)]="inputValue"
+          [placeholder]="placeholder"
+          (keyup.enter)="onConfirm()" />
+      </div>
+      <div class="prompt-footer">
+        <button class="cancel-button" (click)="onCancel()">{{ cancelButtonText }}</button>
+        <button class="confirm-button" (click)="onConfirm()">{{ confirmButtonText }}</button>
+      </div>
+    </div>
+  </div>
+}

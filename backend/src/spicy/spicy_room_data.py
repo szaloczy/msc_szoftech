@@ -1,7 +1,7 @@
 from typing import Optional
 
-from backend.src.spicy.spicy_deck import SpicyCardType, SpicyDeck
 from src.shared.game_room_interface import GameRoomInterface
+from src.spicy.spicy_deck import SpicyDeck, SpicyCardType
 
 SPICY_NUMBER_OF_MAX_PLAYERS = 6
 
@@ -17,7 +17,6 @@ class SpicyRoomData(GameRoomInterface):
         self.placed_card_owner: Optional[str] = None
         self.pile_size: int = 0
         self.liar_caller: Optional[str] = None
-        self.plus_ten_cards: int = SPICY_NUMBER_OF_TROPHY_CARDS
         self.turnNames: list[str] = []
         self.points = {},
 

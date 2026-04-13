@@ -1,5 +1,6 @@
 from flask import request, jsonify, Blueprint
 
+from src.spicy.spicy_room_service import SpicyRoomService
 
 spicy_game_controller = Blueprint('game_controller', __name__)
 
@@ -18,5 +19,5 @@ async def start_game_endpoint():
         # Call the service to start the game
         message =  await SpicyRoomService.start_game(player_id, room_id)
         return jsonify({"message": message}), 200
-    except ErrorManager as e:
+    except Exception as e:
         return e.msg(), 400

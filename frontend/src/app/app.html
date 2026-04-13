@@ -1,35 +1,3 @@
-@if (userNameProvided()) {
-    <div class="container-fluid home-header mb-2">
-        <div class="row p-2">
-            <div class="col-8 title">
-                Choose Your Game
-            </div>
-            <div class="col-2">
-                <input type="text" class="form-control" placeholder="room code">
-            </div>
-            <div class="col-2 text-end title" style="font-weight: normal;">
-                {{ userService.displayName }}
-            </div>
-        </div>
-    </div>
-    <router-outlet></router-outlet>
-}@else {
-    <div class="container-fluid">
-        <div class="row mt-5 justify-content-center">
-            <div class="card col-6 text-center p-5">
-                @if (loading()) {
-                    <div class="row justify-content-center mt-3">
-                        <div class="glitch-box"></div>
-                    </div>
-                }@else {
-                    <h1 class="mb-4">Welcome to Spicy!</h1>
-                    <p class="mb-4">Please enter your name to continue:</p>
-                    <input type="text" class="form-control mb-3" placeholder="Your name" [(ngModel)]="username">
-                    <button class="btn btn-primary" (click)="saveUser()">Continue</button>
-                }
-            </div>
-        </div>
-        
-    </div>
-}
+<router-outlet></router-outlet>
+
 

@@ -27,8 +27,8 @@ export const websocketMessageSchemaTypes = {
         user_id: z.string().optional().nullable(),
         user_name: z.string().optional()
     }),
-    roomCreated: z.object({
-    type: z.literal('roomCreated'),
+    createLobby: z.object({
+    type: z.literal('createLobby'),
     roomId: z.string()
     }),
     join: z.object({

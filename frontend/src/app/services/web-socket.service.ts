@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { websocketMessageSchemaTypes, WebSocketMessageTypes } from '../types';
 import { ZodLiteral } from 'zod';
 
@@ -13,7 +13,7 @@ export class WebSocketService {
   public connectionReady$ = this.connectionReady.asObservable();
 
   public get isConnectionReady(): boolean {
-    return this.connectionReady.value;  
+    return this.connectionReady.value;
   }
 
     //Some kind of message handler for schema type messages
@@ -21,15 +21,23 @@ export class WebSocketService {
     messageHnadlers = {}
     */
 
-   connect() {
+  messageHandlers: {
+    [K in keyof WebSocketMessageTypes]: Subject<WebSocketMessageTypes[K]>;
+  } = Object.keys(websocketMessageSchemaTypes).reduce((handlers, key) => {
+    handlers[key as keyof WebSocketMessageTypes] = new Subject();
+    return handlers;
+  }, [] as any);
+  
+
+  connect() {
     this.connectionReady.next(false);
     this.socket = new WebSocket('/ws');
-    
+
     this.socket.onopen = () => {
       this.connectionReady.next(true);
       console.log('WebSocket connection established');
     };
-    
+
    this.socket.onmessage = (event) => {
       console.log('Received message:', event.data);
       try {
@@ -88,6 +96,6 @@ export class WebSocketService {
       this.socket.send(JSON.stringify(message));
     } else {
       console.error('Websocket is not open. Ready state: ', this.socket.readyState);
-    } 
+    }
   }
 }

@@ -1,4 +1,8 @@
 <div class="container-fluid">
+    <nav class="home-navbar d-flex justify-content-end align-items-center">
+        <span class="user-badge">{{ displayUserName }}</span>
+    </nav>
+
     <div class="row">
         <div class="col-10">
             <div class="row justify-content-start">
@@ -40,4 +44,16 @@
 
         </div>
     </div>
+
+     @if (showPromptDialog) {
+      <app-prompt-dialog
+        [(showDialog)]="showPromptDialog"
+        [title]="'Enter information'"
+        [message]="'Please enter a username'"
+        [confirmButtonText]="'Confirm'"
+        [cancelButtonText]="'Cancel'"
+        (confirmed)="onDialogConfirmed($event)"
+        (canceled)="onDialogCanceled()">
+      </app-prompt-dialog>
+    }
 </div>
