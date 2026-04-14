@@ -36,9 +36,10 @@ export class UserService {
       const { id, name } = this.currentUser() || {};
 
       if(id && name && name.length >= 3) {
-        this.websocketService.sendMessage({ 
-          type: 'auth', 
-          user_id: id
+        this.websocketService.sendMessage({
+          type: 'userAuth',
+          user_id: id,
+          user_name: name
       });
     } else {
       localStorage.removeItem("currentUser");
@@ -52,7 +53,7 @@ export class UserService {
 
   private saveUser(user: User): void {
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(user));
-  
+
     this.currentUser.set(user);
   }
 

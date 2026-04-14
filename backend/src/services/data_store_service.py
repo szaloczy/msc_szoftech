@@ -79,9 +79,12 @@ async def join_room(data, connection):
         await connection.get('connection').send(
             json.dumps({"type": "error", "message": str(e)}))
 
-def get_game_type_from_room(self, room_id: str):
-    room = self.get_room_data(room_id)
-    return room["gameId"] if room else None
+def get_game_type_from_room(room_data) -> str:
+    room_type = type(room_data).__name__.replace("RoomData", "")
+    game_type_map = {
+        "Spicy": "spicy",
+    }
+    return game_type_map.get(room_type, room_type.lower())
 
 def get_room_id(self, join_code: str):
      for room_id, room in self._rooms.items():

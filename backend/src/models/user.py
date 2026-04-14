@@ -19,7 +19,7 @@ def generate_unique_id() -> str:
     return str(uuid.uuid4())
 
 def add_user(user_name, user_id) -> User:
-    new_user: User = {"id": user_id, "username": user_name}
+    new_user: User = {"id": user_id, "name": user_name}
     users.append(new_user)
     return new_user
 
@@ -41,16 +41,21 @@ def get_user(user_id) -> User|None:
 async def set_user_to_connection(data, client):
     try:
         user_id = data.get("user_id")
+        user_name = data.get("user_name")
         user = get_user(user_id)
+
+        # Recreate in-memory users after backend restart when client still has a stored user id.
+        if not user and user_id and user_name:
+            user = add_user(user_name, user_id)
 
         if client and user:
             client['user_id'] = user_id
-            await client['connection'].send(json.dumps({"type":"Auth", "success": True, "user_id": user_id, "user_name": user.get("name") }))
+            await client['connection'].send(json.dumps({"type":"auth", "success": True, "user_id": user_id, "user_name": user.get("name") }))
         else:
             print(f"User {user_id} not found")
-            await client['connection'].send(json.dumps({"type":"Auth", "success": False, "message": "User not found", "user_id": user_id }))
+            await client['connection'].send(json.dumps({"type":"auth", "success": False, "message": "User not found", "user_id": user_id }))
     except Exception as e:
         print(f"Error in set_user_to_connection: {e}")
-        await client['connection'].send(json.dumps({"type":"Auth", "success": False, "message": "An error occurred during authentication" }))
+        await client['connection'].send(json.dumps({"type":"auth", "success": False, "message": "An error occurred during authentication" }))
 
 

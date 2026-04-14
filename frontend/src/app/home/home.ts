@@ -60,7 +60,8 @@ export class Home implements OnInit, OnDestroy {
     if (this.isAuthenticated) {
       this.websocketService.sendMessage({
         type: 'createLobby',
-        game: this.selectedGameKey
+        game: this.selectedGameKey,
+        user_id: this.userService.currentUser()?.id
       });
       this.showPromptDialog = false;
     } else {
@@ -70,8 +71,8 @@ export class Home implements OnInit, OnDestroy {
 
   joinRoom() {
     this.websocketService.sendMessage({
-      type: 'auth',
-      username: this.userService.displayName,
+      type: 'userAuth',
+      user_name: this.userService.displayName,
       user_id: this.userService.currentUser()?.id
     });
     //TODO: implement join room logic

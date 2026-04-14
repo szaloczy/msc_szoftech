@@ -16,18 +16,13 @@ export class WebSocketService {
     return this.connectionReady.value;
   }
 
-    //Some kind of message handler for schema type messages
-    /*
-    messageHnadlers = {}
-    */
-
   messageHandlers: {
     [K in keyof WebSocketMessageTypes]: Subject<WebSocketMessageTypes[K]>;
   } = Object.keys(websocketMessageSchemaTypes).reduce((handlers, key) => {
     handlers[key as keyof WebSocketMessageTypes] = new Subject();
     return handlers;
   }, [] as any);
-  
+
 
   connect() {
     this.connectionReady.next(false);
@@ -96,6 +91,17 @@ export class WebSocketService {
       this.socket.send(JSON.stringify(message));
     } else {
       console.error('Websocket is not open. Ready state: ', this.socket.readyState);
+    }
+  }
+
+  private authUser() {
+    const userId = localStorage.getItem('userId');
+    const userName = localStorage.getItem('userName');
+    if (userId && userName && userName.length > 2) {
+      this.sendMessage({
+        type: 'userAuth',
+        'user_id': userId
+      });
     }
   }
 }

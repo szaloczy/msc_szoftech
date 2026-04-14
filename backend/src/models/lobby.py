@@ -35,7 +35,7 @@ def destroy_lobby(lobby_id) -> bool:
 
 async def join_lobby(data, client):
     try:
-        user_id = data.get("user_id")
+        user_id = data.get("user_id") or (client.get("user_id") if client else None)
         user = get_user(user_id)
         lobby = get_lobby_by_code(data.get("join_code"))
         if user and client and lobby:
@@ -50,7 +50,7 @@ async def join_lobby(data, client):
 
 async def leave_lobby(data, client):
     try:
-        user_id = data.get("user_id")
+        user_id = data.get("user_id") or (client.get("user_id") if client else None)
         user = get_user(user_id)
         lobby = get_lobby_by_code(data.get("join_code"))
         if user and client and lobby:
@@ -73,7 +73,7 @@ async def leave_lobby(data, client):
 
 async def create_lobby(data, client):
     try:
-        user_id = data.get("user_id")
+        user_id = data.get("user_id") or (client.get("user_id") if client else None)
         user = get_user(user_id)
         if user and client:
             lobby = createLobby()
