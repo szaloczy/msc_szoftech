@@ -2,7 +2,7 @@ from typing import TypedDict
 import uuid
 
 from flask import json
-from models.user import User, get_user
+from src.models.user import User, get_user
 
 class LobbyModel(TypedDict):
     id: str

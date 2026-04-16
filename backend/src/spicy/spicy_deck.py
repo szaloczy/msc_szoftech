@@ -11,7 +11,7 @@ class SpicyCardType(Enum):
 class SpicyDeck(Deck):
     def __init__(self):
         super().__init__()
-        self.deck_cards = list[tuple[SpicyCardType, int]] == self.spicy_create_deck()
+        self.deck_cards = self.spicy_create_deck()
         self.shuffle()
 
 

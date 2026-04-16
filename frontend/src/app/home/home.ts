@@ -7,6 +7,7 @@ import { WebSocketService } from '../services/web-socket.service';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { WebSocketMessageTypes } from '../types';
 import { PromptDialog } from '../shared/prompt-dialog/prompt-dialog';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -19,6 +20,7 @@ export class Home implements OnInit, OnDestroy {
 
   private readonly userService = inject(UserService);
   private readonly websocketService = inject(WebSocketService);
+  private readonly router = inject(Router);
   readonly gameKeys = Object.keys(details["games"])
 
   userName = localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')!).name : '';
@@ -42,11 +44,18 @@ export class Home implements OnInit, OnDestroy {
       this.isAuthenticated = false;
     } else {
       this.isAuthenticated = true;
+      this.websocketService.connectionReady$.subscribe(ready => {
+        if (ready) this.userService.startAuthProcess();
+      });
     }
 
     this.roomCreateSub = this.websocketService.messageHandlers['createLobby'].subscribe(
       (message: WebSocketMessageTypes['createLobby']) => {
         this.roomId = message.roomId;
+        if (this.roomId) {
+          localStorage.setItem('roomId', this.roomId);
+          this.router.navigate([`/${this.selectedGameKey}/${this.roomId}`]);
+        }
       }
     )
   }

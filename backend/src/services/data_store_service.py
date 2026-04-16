@@ -24,7 +24,7 @@ def get_room_data(self, room_id: str):
     return data_store.get(room_id)
 
 
-async def create_room(data, connection):
+async def create_lobby(data, connection):
     # Check if the user is authenticated
     if not connection.get('user_id'):
         await connection.get('connection').send(jsonify({"type": "error", "message": "User not connected"}))
@@ -57,11 +57,12 @@ async def create_room(data, connection):
             await connection.get('connection').send(jsonify({"type": "error", "message": "Game does not exist"}))
             return
 
-    data_store[room_id].host_id = user.get("id")
+    data_store[room_id].add_player(user.get("id"), user.get("name"))
 
-    data_store[room_id].add_new_player(user.get("id"), user.get("name"))
+    room_service = get_room_service_map().get(type(data_store[room_id]))
 
     await connection.get('connection').send(json.dumps({"type": "createLobby", "roomId": room_id}))
+    await room_service.update_all_users(data_store[room_id])
 
 async def join_room(data, connection):
     try:
@@ -86,8 +87,9 @@ def get_game_type_from_room(room_data) -> str:
     }
     return game_type_map.get(room_type, room_type.lower())
 
-def get_room_id(self, join_code: str):
-     for room_id, room in self._rooms.items():
-         if room["joinCode"] == join_code:
-             return room_id
-     return None
+
+def get_room_id(room) -> str | None:
+    for room_id, r in data_store.items():
+        if r is room:
+            return room_id
+    return None

@@ -8,7 +8,7 @@ SPICY_NUMBER_OF_MAX_PLAYERS = 6
 class SpicyRoomData(GameRoomInterface):
 
     def __init__(self, public: bool = False):
-        super().__init__(public)
+        super().__init__()
         self.max_players: int = SPICY_NUMBER_OF_MAX_PLAYERS
         self.deck: SpicyDeck = SpicyDeck()
         self.player_cards: dict[str, list[tuple[SpicyCardType, int]]] = {}
@@ -38,7 +38,7 @@ class SpicyRoomData(GameRoomInterface):
             "player_ready": self.player_ready
         }
         
-    def add_new_player(self, player_id: str, name: str):
+    def add_player(self, player_id: str, name: str):
         if len(self.turns) >= self.max_players:
             raise Exception("Maximum number of players reached")
         self.turns.append(player_id)

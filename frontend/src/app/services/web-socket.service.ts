@@ -52,7 +52,7 @@ export class WebSocketService {
           const result = schema.safeParse(message);
 
           if (result.success) {
-            // Handle the message based on its type
+            this.messageHandlers[messageType].next(result.data as any);
           }
         }
 

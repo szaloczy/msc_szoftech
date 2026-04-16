@@ -1,8 +1,6 @@
-import datetime
+from datetime import datetime
 from abc import ABC, abstractmethod
 from typing import Optional
-
-from src.models.user import User
 
 
 class GameRoomInterface(ABC):
@@ -16,7 +14,7 @@ class GameRoomInterface(ABC):
         self.lobby_leader_id: Optional[str] = None
 
     @abstractmethod
-    def add_player(self, user: User):
+    def add_player(self, player_id: str, name: str):
         """Add a player to the game room."""
         pass
 
