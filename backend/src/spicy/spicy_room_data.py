@@ -1,7 +1,7 @@
 from typing import Optional
 
-from src.shared.game_room_interface import GameRoomInterface
-from src.spicy.spicy_deck import SpicyDeck, SpicyCardType
+from shared.game_room_interface import GameRoomInterface
+from spicy.spicy_deck import SpicyDeck, SpicyCardType
 
 SPICY_NUMBER_OF_MAX_PLAYERS = 6
 
