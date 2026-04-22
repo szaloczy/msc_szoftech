@@ -1,1 +1,76 @@
-<p>board works!</p>
+<div class="grid-container">
+
+  <!-- second-player -->
+  <div class="grid-item" style="grid-area: player-top-left">
+    <app-other-player-hand ></app-other-player-hand>
+  </div>
+
+  <!-- third-player -->
+  <div class="grid-item" style="grid-area: player-top-center">
+    <app-other-player-hand ></app-other-player-hand>
+  </div>
+
+  <!-- fourth-player -->
+  <div class="grid-item" style="grid-area: player-top-right">
+    <app-other-player-hand ></app-other-player-hand>
+  </div>
+
+  <!-- first-player -->
+  <div class="grid-item" style="grid-area: player-mid-left">
+    <app-other-player-hand></app-other-player-hand>
+  </div>
+
+  <!-- fifth-player -->
+  <div class="grid-item" style="grid-area: player-mid-right">
+    <app-other-player-hand></app-other-player-hand>
+  </div>
+
+  <!-- playfield -->
+  <div class="grid-item" id="mid-center" style="grid-area: playfield">
+    <div class="deck-area">
+      <!-- Played Deck -->
+      <div class="played-deck">
+        @if (!showLiarChoice) {
+          <div class="card-top" (click)="lieCalled()"></div>
+          <button class="liar-button" (click)="lieCalled()" [disabled]="isLiarButtonDisabled">
+            LIAR
+          </button>
+        } @else {
+          <div class="liar-choice-button">
+            <div class="liar-choice-half left" title="Lied by number">
+              NUMBER
+            </div>
+            <div class="liar-choice-half right" title="Lied by color">
+              COLOR
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Drawing Deck -->
+      <div class="drawing-deck">
+        <div class="card-back"></div>
+        <div class="card-count">{{ remainingCards }}</div>
+        <!-- You can bind this dynamically -->
+      </div>
+
+      <div class="bonus-card-holder">
+        <div class="bonus-card" *ngFor="let i of [].constructor(plusTenCards); let idx = index">
+          <div class="inner-circle">+10</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="pass-button" (click)="passTurn()" [disabled]="!isMyTurn">
+      PASS TURN
+    </button>
+    @if (roomData?.currentTurn === null) {
+      <button class="start-button" (click)="startGame()">
+        START GAME
+      </button>
+    }
+  </div>
+</div>
+<div id="own-cards">
+  <app-user-cards></app-user-cards>
+</div>

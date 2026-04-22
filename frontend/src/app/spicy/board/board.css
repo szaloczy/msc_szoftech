@@ -1,0 +1,54 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  grid-template-rows: repeat(2, 1fr); /* 3 equal rows */
+  grid-template-areas:
+    "player-top-left player-top-center player-top-right"
+    "player-mid-left playfield player-mid-right";
+  height: 65%;
+  min-height: 300px;
+  width: 100%;
+
+  font-family: sans-serif;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.grid-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  box-sizing: border-box;
+}
+
+.pass-button {
+  padding: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: rgb(0, 0, 0);
+  background-color: #e4e4e4;
+  border: 2px solid #09360b;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+  cursor: pointer;
+  margin: auto;
+  transition: all 0.2s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.pass-button:hover {
+  background-color: #686666;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+  transform: scale(1.05);
+}
+
+.pass-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+}

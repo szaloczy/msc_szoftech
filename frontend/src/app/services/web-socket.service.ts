@@ -11,6 +11,7 @@ export class WebSocketService {
   private readonly RECONNECTIONTERVAL = 5000; // 5 sec
   private connectionReady = new BehaviorSubject<boolean>(false);
   public connectionReady$ = this.connectionReady.asObservable();
+  private readonly componentSubscriptions = new Map<object, Subscription[]>();
 
   public get isConnectionReady(): boolean {
     return this.connectionReady.value;
@@ -22,6 +23,27 @@ export class WebSocketService {
     handlers[key as keyof WebSocketMessageTypes] = new Subject();
     return handlers;
   }, [] as any);
+
+
+  subscribeToMessage<K extends keyof WebSocketMessageTypes>(
+    messageType: K,
+    callback: (message: WebSocketMessageTypes[K]) => void,
+    componentInstance: object
+  ): Subscription {
+    const subscription = this.messageHandlers[messageType].subscribe(callback);
+
+    // Track this subscription for the component
+    if (!this.componentSubscriptions.has(componentInstance)) {
+      this.componentSubscriptions.set(componentInstance, []);
+    }
+
+    const subscriptions = this.componentSubscriptions.get(componentInstance);
+    if (subscriptions) {
+      subscriptions.push(subscription);
+    }
+
+    return subscription;
+  }
 
 
   connect() {
