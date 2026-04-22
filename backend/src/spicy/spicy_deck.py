@@ -1,6 +1,6 @@
 from enum import Enum
 
-from src.shared.deck import Deck
+from shared.deck import Deck
 
 
 class SpicyCardType(Enum):

@@ -1,6 +1,7 @@
 import asyncio
 import json
 
+from spicy.spicy_deck import SpicyCardType
 from src.services.data_store_service import get_room_data, get_room_id
 from src.shared.game_room_service_interface import GameRoomService
 from src.spicy.spicy_room_data import SpicyRoomData
@@ -92,6 +93,30 @@ class SpicyRoomService(GameRoomService):
         else:
             for player in game_data.turns:
                 game_data.player_cards[player] = game_data.deck.draw_cards(6)
+
+    @staticmethod
+    def play_card(player_id: str, room_id: str, card: tuple[SpicyCardType, int], lied: bool):
+        room = get_room_data(room_id)
+        if room.current_turn != player_id:
+            raise Exception("It's not the player's turn")
+        
+        player_cards = room.player_cards.get(player_id, [])
+        if card not in player_cards and not lied:
+            raise Exception("Player does not have the specified card")
+        
+        if lied:
+            if room.current_card:
+                if room.current_card[0] != card[0] or room.current_card[1] != card[1]:
+                    #Büntetés logika
+                    pass
+            room.current_lied_card = card
+        room.current_card = card
+        room.placed_card_owner = player_id
+        room.pile_size += 1
+        del player_cards[player_cards.index(card)]
+        
+
+
         
 
 def serialize_card(card):

@@ -4,9 +4,9 @@ from typing import TypeVar, Generic, Dict
 
 from flask import jsonify
 
-from src.game_room_service_map import get_room_service_map
-from src.models.user import User, get_user
-from src.spicy.spicy_room_data import SpicyRoomData
+from game_room_service_map import get_room_service_map
+from models.user import User, get_user
+from spicy.spicy_room_data import SpicyRoomData
 
 # In-memory data store ("bound" can be extended in case of new game types)
 TGameRoom = TypeVar('TGameRoom', bound= SpicyRoomData)
