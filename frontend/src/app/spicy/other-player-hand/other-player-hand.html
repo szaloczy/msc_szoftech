@@ -1,1 +1,10 @@
-<p>other-player-hand works!</p>
+<div class="card-hand">
+  <div class="player-name">{{ name }}</div>
+  <div class="card-holder">
+    <div
+      class="card"
+      *ngFor="let i of [].constructor(cards).slice(0, 5); let index = index"
+      [ngStyle]="{ transform: 'rotate(' + getRotation(index) + 'deg)', 'z-index': i }"></div>
+    <div *ngIf="cards > 0" class="card-count">{{ cards }}</div>
+  </div>
+</div>

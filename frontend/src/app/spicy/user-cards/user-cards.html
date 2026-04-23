@@ -1,1 +1,16 @@
-<p>user-cards works!</p>
+<div class="user-cards">
+  @for (card of cards; track $index) {
+    <app-card
+      [value]="card[1]"
+      [suit]="card[0]"
+      [isSelected]="selectedCardIndex === $index"
+      [declaredSuit]="selectedDeclaredSuit"
+      [declaredValue]="selectedDeclaredValue"
+      [disabled]="disabled"
+      [cardIndex]="$index"
+      (click)="onCardSelect($index)"
+      (placeCard)="onPlaceCard($event)"
+      (declaredChange)="onDeclaredChange($event)">
+    </app-card>
+  }
+</div>
