@@ -1,1 +1,23 @@
-<p>card works!</p>
+<div class="card" [ngClass]="isSelected ? 'selected' : 'normal'">
+  <div class="card-padding">
+    <div class="card-inner" [style.background-image]="'url(' + cardImageUrl + ')'">
+      <div class="card-corner card-corner-right">
+        <div class="card-suit" [style.background]="cardColor"></div>
+        <div class="card-number">{{ value }}</div>
+      </div>
+      <ng-container *ngIf="isSelected">
+        <form (ngSubmit)="submitCard($event)" class="card-form" #cardForm="ngForm">
+          <select [(ngModel)]="declaredSuit" name="suit" (change)="emitDeclaredChange()" required>
+            <option value="pepper">PEPPER</option>
+            <option value="chili">CHILI</option>
+            <option value="wasabi">WASABI</option>
+          </select>
+          <select [(ngModel)]="declaredValue" name="value" (change)="emitDeclaredChange()" required>
+            <option *ngFor="let num of [1,2,3,4,5,6,7,8,9,10]" [value]="num">{{ num }}</option>
+          </select>
+          <button type="submit" class="send-button" [disabled]="disabled || !cardForm.valid">PLACE CARD</button>
+        </form>
+      </ng-container>
+    </div>
+  </div>
+</div>

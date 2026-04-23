@@ -1,28 +1,28 @@
 <div class="grid-container">
 
-  <!-- second-player -->
+ <!-- second-player -->
   <div class="grid-item" style="grid-area: player-top-left">
-    <app-other-player-hand ></app-other-player-hand>
+    <app-other-player-hand [name]="getPlayerNameAtPosition(1)" [cards]="getPlayerCardsAtPosition(1)"></app-other-player-hand>
   </div>
 
   <!-- third-player -->
   <div class="grid-item" style="grid-area: player-top-center">
-    <app-other-player-hand ></app-other-player-hand>
+    <app-other-player-hand [name]="getPlayerNameAtPosition(2)" [cards]="getPlayerCardsAtPosition(2)"></app-other-player-hand>
   </div>
 
   <!-- fourth-player -->
   <div class="grid-item" style="grid-area: player-top-right">
-    <app-other-player-hand ></app-other-player-hand>
+    <app-other-player-hand [name]="getPlayerNameAtPosition(3)" [cards]="getPlayerCardsAtPosition(3)"></app-other-player-hand>
   </div>
 
   <!-- first-player -->
   <div class="grid-item" style="grid-area: player-mid-left">
-    <app-other-player-hand></app-other-player-hand>
+    <app-other-player-hand [name]="getPlayerNameAtPosition(0)" [cards]="getPlayerCardsAtPosition(0)"></app-other-player-hand>
   </div>
 
   <!-- fifth-player -->
   <div class="grid-item" style="grid-area: player-mid-right">
-    <app-other-player-hand></app-other-player-hand>
+    <app-other-player-hand [name]="getPlayerNameAtPosition(4)" [cards]="getPlayerCardsAtPosition(4)"></app-other-player-hand>
   </div>
 
   <!-- playfield -->

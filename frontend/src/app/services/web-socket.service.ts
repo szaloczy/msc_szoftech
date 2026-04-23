@@ -45,6 +45,18 @@ export class WebSocketService {
     return subscription;
   }
 
+  /**
+   * Unsubscribe all subscriptions for a component
+   * @param componentInstance The component instance to unsubscribe from
+   */
+  unsubscribeComponent(componentInstance: object): void {
+    const subscriptions = this.componentSubscriptions.get(componentInstance);
+    if (subscriptions) {
+      subscriptions.forEach(sub => sub.unsubscribe());
+      this.componentSubscriptions.delete(componentInstance);
+    }
+  }
+
 
   connect() {
     this.connectionReady.next(false);

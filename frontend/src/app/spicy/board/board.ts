@@ -5,17 +5,18 @@ import { SpicyCard, SpicyRoomData } from '../../types_spicy';
 import { OtherPlayerHand } from '../other-player-hand/other-player-hand';
 import { UserCards } from '../user-cards/user-cards';
 import { WebSocketService } from '../../services/web-socket.service';
+import { CommonModule } from '@angular/common';
+import { BaseComponent } from '../../shared/base-component/base-component';
 
 @Component({
   selector: 'app-board',
-  imports: [OtherPlayerHand, UserCards],
+  imports: [OtherPlayerHand, UserCards, CommonModule, OtherPlayerHand, UserCards],
   templateUrl: './board.html',
   styleUrl: './board.css',
 })
-export class Board implements OnInit {
+export class Board extends BaseComponent implements OnInit {
   spicyService = inject(SpicyService);
   activatedRoute = inject(ActivatedRoute);
-  webSocketService = inject(WebSocketService);
 
   roomData: SpicyRoomData | null = null;
   yourCards: SpicyCard[] = [];
@@ -74,8 +75,8 @@ export class Board implements OnInit {
   }
 
   startGame() {
-    //TODO: Implement start game logic
-    return;
+    const roomId = this.activatedRoute.snapshot.params['roomId'];
+    this.spicyService.startGame(roomId).subscribe();
   }
 
 
@@ -87,6 +88,17 @@ export class Board implements OnInit {
   passTurn() {
     //TODO: Implement pass turn logic
     return;
+  }
+
+  getPlayerNameAtPosition(position: number): string {
+    if (
+      this.playerPositions[position] !== -1 &&
+      this.players.length > 0 &&
+      this.players[this.playerPositions[position]]
+    ) {
+      return this.turnNames[this.playerPositions[position]];
+    }
+    return '';
   }
 }
 
