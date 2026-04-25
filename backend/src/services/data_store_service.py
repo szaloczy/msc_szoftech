@@ -4,9 +4,11 @@ from typing import TypeVar, Generic, Dict
 
 from flask import jsonify
 
-from game_room_service_map import get_room_service_map
-from models.user import User, get_user
-from spicy.spicy_room_data import SpicyRoomData
+
+from src.models.user import User, get_user
+from src.spicy.spicy_room_data import SpicyRoomData
+
+from src.game_room_service_map import get_room_service_map
 
 # In-memory data store ("bound" can be extended in case of new game types)
 TGameRoom = TypeVar('TGameRoom', bound= SpicyRoomData)
@@ -64,16 +66,28 @@ async def create_lobby(data, connection):
     await connection.get('connection').send(json.dumps({"type": "createLobby", "roomId": room_id}))
     await room_service.update_all_users(data_store[room_id])
 
-async def join_room(data, connection):
+async def join_lobby(data, connection):
     try:
         # Check user and room
         user = get_user(connection.get('user_id'))
         room_data = get_room_data(data.get('roomId'))
         room_service = get_room_service_map().get(type(room_data))
 
-        if not room_data.is_player_joined(user.get("id")):
-            room_data.add_new_player(user.get("id"), user.get("name"))
+        # Reconnect: Update player if already in the room
+        if room_data.is_player_joined(user.get("id")):
+            game_type = get_game_type_from_room(room_data)
 
+            await connection.get('connection').send(
+                json.dumps({"type": "join", "room_id": data.get('room_id'), "game_type": game_type}))
+            await room_service.update_all_users(room_data, user.get("id"))
+            return
+
+        room_data.add_new_player(user.get("id"), user.get("name"))
+
+        game_type = get_game_type_from_room(room_data)
+
+        await connection.get('connection').send(
+            json.dumps({"type": "join", "room_id": data.get('room_id'), "game_type": game_type}))
         await room_service.update_all_users(room_data)
 
     except Exception as e:

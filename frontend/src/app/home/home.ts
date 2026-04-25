@@ -25,10 +25,12 @@ export class Home implements OnInit, OnDestroy {
 
   userName = localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')!).name : '';
   roomId = '';
+  joinRoomCode = '';
   isModalOpen: boolean = false;
   selectedGameKey: string = '';
   pendingAction: null | 'create' | 'join' = null;
   roomCreateSub: Subscription | null = null;
+  joinLobbyRoomSub: Subscription | null = null;
   showPromptDialog = false;
   isAuthenticated = false;
 
@@ -57,11 +59,12 @@ export class Home implements OnInit, OnDestroy {
           this.router.navigate([`/${this.selectedGameKey}/${this.roomId}`]);
         }
       }
-    )
+    );
   }
 
   ngOnDestroy(): void {
     this.roomCreateSub?.unsubscribe();
+    this.joinLobbyRoomSub?.unsubscribe();
   }
 
   createRoom() {
@@ -79,13 +82,51 @@ export class Home implements OnInit, OnDestroy {
   }
 
   joinRoom() {
+    this.pendingAction = 'join';
+    if (this.isAuthenticated) {
+      this.websocketService.sendMessage({
+        type: 'joinLobby',
+        room_id: this.roomId
+      });
+
+      this.websocketService.messageHandlers.join.subscribe({
+        next: (data) => {
+          const gameType = data.gameType;
+          console.info('Joining room:', data, gameType);
+          const roomId = data.roomId;
+          this.router.navigate([`/${gameType}/${roomId}`]);
+          this.showPromptDialog = false;
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
+    } else {
+      this.showPromptDialog = true;
+    }
+  }
+
+  joinRoomByCode() {
+    if (!this.joinRoomCode.trim()) {
+      alert('Please enter a room code');
+      return;
+    }
+
+    const userId = this.userService.currentUser()?.id;
+
+    if (!userId) {
+      this.pendingAction = 'join';
+      this.showPromptDialog = true;
+      return;
+    }
+
     this.websocketService.sendMessage({
-      type: 'userAuth',
-      user_name: this.userService.displayName,
-      user_id: this.userService.currentUser()?.id
+      type: 'joinLobby',
+      join_code: this.joinRoomCode.trim(),
+      user_id: userId
     });
-    //TODO: implement join room logic
-    this.pendingAction = null;
+
+    this.joinRoomCode = '';
   }
 
   selectGame(gameKey: string) {
@@ -119,7 +160,7 @@ export class Home implements OnInit, OnDestroy {
             this.createRoom();
             this.showPromptDialog = false;
           } else if (this.pendingAction === 'join') {
-            this.joinRoom();
+            this.joinRoomByCode();
             this.showPromptDialog = false;
           }
         },

@@ -45,6 +45,18 @@
         </div>
     </div>
 
+    <footer class="home-footer">
+        <div class="footer-content d-flex gap-2 align-items-center">
+            <input
+                type="text"
+                class="form-control"
+                placeholder="Enter room code"
+                [(ngModel)]="joinRoomCode"
+            />
+            <button class="btn btn-success" (click)="joinRoom()">Join Room</button>
+        </div>
+    </footer>
+
      @if (showPromptDialog) {
       <app-prompt-dialog
         [(showDialog)]="showPromptDialog"

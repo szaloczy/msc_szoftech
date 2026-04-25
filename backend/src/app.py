@@ -6,10 +6,11 @@ from flask_cors import CORS
 from flask import Flask, jsonify
 from websockets.sync.server import ServerConnection
 
-from models.lobby import join_lobby, leave_lobby
+
 from models.user import set_user_to_connection
-from services.data_store_service import create_lobby
+from services.data_store_service import create_lobby, join_lobby
 from shared.users_controller import users_controller
+from src.models.lobby import leave_lobby
 from webocket_controller import connected_clients
 from spicy.spicy_controller import spicy_game_controller
 
@@ -20,7 +21,7 @@ CORS(app)
 
 _message_handlers = {
     "userAuth": set_user_to_connection,
-    "joinLobby": join_lobby,
+    "joinLobby":join_lobby,
     "leaveLobby": leave_lobby,
     "createLobby": create_lobby,
 }

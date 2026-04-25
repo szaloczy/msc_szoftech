@@ -34,7 +34,7 @@ export const websocketMessageSchemaTypes = {
     join: z.object({
         type: z.literal('join'),
         roomId: z.string(),
-        gameType: z.enum(['spicy', 'aow', 'space-pong', 'betrayal', 'wod'])
+        gameType: z.enum(['spicy'])
     }),
     roomData: z.object({
     type: z.literal('roomData'),
