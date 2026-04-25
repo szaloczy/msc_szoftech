@@ -17,7 +17,7 @@ def get_data_store() -> dict[str, TGameRoom]:
     return data_store
 
 
-def get_room_data(self, room_id: str):
+def get_room_data(room_id: str):
     room_id = room_id.upper()
     if data_store.get(room_id) is None:
         raise Exception(f"Room {room_id} does not exist")

@@ -11,6 +11,7 @@ from models.user import set_user_to_connection
 from services.data_store_service import create_lobby
 from shared.users_controller import users_controller
 from webocket_controller import connected_clients
+from spicy.spicy_controller import spicy_game_controller
 
 # Flask app setup
 app = Flask(__name__)
@@ -25,6 +26,7 @@ _message_handlers = {
 }
 # Register Blueprints
 app.register_blueprint(users_controller)
+app.register_blueprint(spicy_game_controller)
 
 
 async def handle_connection(websocket: ServerConnection):

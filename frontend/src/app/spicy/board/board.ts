@@ -34,7 +34,8 @@ export class Board extends BaseComponent implements OnInit {
   currentTurn: string | null = null;
   isMyTurn = false;
   showLiarChoice = false;
-  userId = localStorage.getItem('userId') || '';
+  currentUser = localStorage.getItem('currentUser') || '';
+  userId = '';
   isliarActive = false;
   liarCaller: string | null = null;
   placedCardOwner: string | null = null;
@@ -76,7 +77,11 @@ export class Board extends BaseComponent implements OnInit {
 
   startGame() {
     const roomId = this.activatedRoute.snapshot.params['roomId'];
-    this.spicyService.startGame(roomId).subscribe();
+    const userId = JSON.parse(this.currentUser).id;
+
+    console.log('Starting game with roomId:', roomId, 'and userId:', userId);
+
+    this.spicyService.startGame(roomId, userId).subscribe();
   }
 
 

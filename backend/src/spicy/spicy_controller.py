@@ -6,7 +6,7 @@ spicy_game_controller = Blueprint('game_controller', __name__)
 
 @spicy_game_controller.route('/api/startgame', methods=['POST'])
 async def start_game_endpoint():
-    player_id = request.cookies.get("userId")
+    player_id =request.get_json().get('userId')
     room_id = request.get_json().get('roomId')
 
     if not player_id:
