@@ -4,7 +4,6 @@ from typing import TypeVar, Generic, Dict
 
 from flask import jsonify
 
-
 from src.models.user import User, get_user
 from src.spicy.spicy_room_data import SpicyRoomData
 
@@ -62,6 +61,8 @@ async def create_lobby(data, connection):
     data_store[room_id].add_player(user.get("id"), user.get("name"))
 
     room_service = get_room_service_map().get(type(data_store[room_id]))
+    if room_service is None:
+        raise Exception(f"No room service registered for room type {type(data_store[room_id]).__name__}")
 
     await connection.get('connection').send(json.dumps({"type": "createLobby", "roomId": room_id}))
     await room_service.update_all_users(data_store[room_id])
@@ -70,24 +71,34 @@ async def join_lobby(data, connection):
     try:
         # Check user and room
         user = get_user(connection.get('user_id'))
-        room_data = get_room_data(data.get('roomId'))
+        if not user:
+            await connection.get('connection').send(json.dumps({"type": "error", "message": "User not authenticated"}))
+            return
+
+        room_id = data.get('roomId') or data.get('room_id')
+        if not room_id:
+            raise Exception("Room ID is required")
+
+        room_data = get_room_data(room_id)
         room_service = get_room_service_map().get(type(room_data))
+        if room_service is None:
+            raise Exception(f"No room service registered for room type {type(room_data).__name__}")
 
         # Reconnect: Update player if already in the room
         if room_data.is_player_joined(user.get("id")):
             game_type = get_game_type_from_room(room_data)
-
+            print("type", game_type)
             await connection.get('connection').send(
-                json.dumps({"type": "join", "room_id": data.get('room_id'), "game_type": game_type}))
+                json.dumps({"type": "join", "roomId": room_id, "gameType": game_type}))
             await room_service.update_all_users(room_data, user.get("id"))
             return
 
-        room_data.add_new_player(user.get("id"), user.get("name"))
+        room_data.add_player(user.get("id"), user.get("name"))
 
         game_type = get_game_type_from_room(room_data)
 
         await connection.get('connection').send(
-            json.dumps({"type": "join", "room_id": data.get('room_id'), "game_type": game_type}))
+            json.dumps({"type": "join", "roomId": room_id, "gameType": game_type}))
         await room_service.update_all_users(room_data)
 
     except Exception as e:

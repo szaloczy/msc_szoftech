@@ -21,7 +21,7 @@ CORS(app)
 
 _message_handlers = {
     "userAuth": set_user_to_connection,
-    "joinLobby":join_lobby,
+    "joinLobby": join_lobby,
     "leaveLobby": leave_lobby,
     "createLobby": create_lobby,
 }
