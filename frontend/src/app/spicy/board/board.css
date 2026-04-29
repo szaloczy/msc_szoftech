@@ -1,14 +1,22 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #4caf50, #2e2e2e);
+}
+
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
-  grid-template-rows: repeat(2, 1fr); /* 3 equal rows */
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   grid-template-areas:
     "player-top-left player-top-center player-top-right"
     "player-mid-left playfield player-mid-right";
   height: 65%;
   min-height: 300px;
   width: 100%;
-
   font-family: sans-serif;
   padding: 10px;
   box-sizing: border-box;
@@ -22,12 +30,172 @@
   box-sizing: border-box;
 }
 
+/* Playfield */
+#mid-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.deck-area {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+}
+
+/* Drawing Deck */
+.drawing-deck,
+.played-deck {
+  position: relative;
+  width: 100px;
+  height: 150px;
+}
+
+.card-back {
+  width: 100%;
+  height: 100%;
+  background-color: #444;
+  border: 2px solid #222;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.card-count {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+  pointer-events: none;
+}
+
+/* Played Deck */
+.card-top {
+  width: 100%;
+  height: 100%;
+  background-color: #bbb;
+  border: 2px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Liar Button */
+.liar-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: lightgray;
+  color: black;
+  font-weight: bold;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  font-size: 0.65rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.liar-button:hover {
+  background-color: darkgray;
+  color: white;
+}
+
+.liar-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background-color: #cccccc;
+  color: #666666;
+}
+
+/* Liar Choice Prompt */
+.liar-choice-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  flex-direction: column;
+  border: 3px solid #444;
+  display: flex;
+  overflow: hidden;
+  font-size: 0.55rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.liar-choice-half {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+  text-align: center;
+  padding: 5px;
+}
+
+.liar-choice-half:hover {
+  filter: brightness(1.1);
+  transform: scale(1.06);
+}
+
+.liar-choice-half.left {
+  background-color: #8ccc0d;
+  border-right: 1px solid #888;
+  color: #000;
+}
+
+.liar-choice-half.right {
+  background-color: #db3b3b;
+  color: #000;
+}
+
+/* Start Button */
+.start-button {
+  padding: 15px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  background-color: #1a1a1a;
+  border: 2px solid #4caf50;
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+  cursor: pointer;
+  margin: auto;
+  transition: all 0.2s ease;
+}
+
+.start-button:hover {
+  background-color: #2e2e2e;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+  transform: scale(1.05);
+}
+
+.start-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+}
+
+/* Pass Button */
 .pass-button {
   padding: 10px;
   font-size: 1rem;
   font-weight: bold;
   text-transform: uppercase;
-  color: rgb(0, 0, 0);
+  color: black;
   background-color: #e4e4e4;
   border: 2px solid #09360b;
   border-radius: 1rem;
@@ -35,11 +203,6 @@
   cursor: pointer;
   margin: auto;
   transition: all 0.2s ease;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 }
 
 .pass-button:hover {
@@ -51,4 +214,133 @@
 .pass-button:active {
   transform: scale(0.95);
   box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+}
+
+.pass-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Bonus Cards */
+.bonus-card-holder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0px;
+}
+
+.bonus-card {
+  width: 75px;
+  height: 50px;
+  border-radius: 10%;
+  background: lightgray;
+  border: 2px solid #444;
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.bonus-card:hover {
+  transform: scale(1.05);
+  box-shadow: inset 0 6px 12px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.inner-circle {
+  width: 90%;
+  height: 90%;
+  font-size: 1.4rem;
+  text-align: center;
+  align-content: center;
+  color: #bbb;
+  border-radius: 10%;
+  background: white;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Credits Button */
+.credits-button {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.credits-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.credits-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile Portrait */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+  .grid-container {
+    padding: 5px;
+    height: 60vh;
+  }
+
+  .grid-item {
+    font-size: 1.5rem;
+  }
+
+  .deck-area {
+    gap: 1rem;
+    flex-direction: column;
+  }
+
+  .bonus-card-holder {
+    flex-direction: row;
+  }
+
+  .drawing-deck,
+  .played-deck {
+    width: 4.5rem;
+    height: 3rem;
+  }
+
+  .liar-button {
+    width: 30px;
+    height: 30px;
+    font-size: 0.5rem;
+  }
+
+  .start-button {
+    font-size: 10px;
+    margin: 25px;
+  }
+
+  .bonus-card {
+    width: 20px;
+    height: 30px;
+  }
+
+  .inner-circle {
+    font-size: 0.5rem;
+  }
+
+  #mid-center {
+    flex-direction: column;
+  }
 }
