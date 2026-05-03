@@ -1,7 +1,7 @@
 import asyncio
 import json
 
-from spicy.spicy_deck import SpicyCardType
+from src.spicy.spicy_deck import SpicyCardType
 from src.services.data_store_service import get_room_data, get_room_id
 from src.shared.game_room_service_interface import GameRoomService
 from src.spicy.spicy_room_data import SpicyRoomData
@@ -25,7 +25,7 @@ class SpicyRoomService(GameRoomService):
             "liarCaller": room.liar_caller,
             "plusTenCards": room.plus_ten_cards,
             "playerReady": room.player_ready,
-            "points": room.get_sorted_stats() if room.is_ended else None
+            "points": room.get_sorted_stats()
         }
 
     @staticmethod

@@ -1,16 +1,15 @@
 import json
 import secrets
+
 from typing import TypeVar, Generic, Dict
-
 from flask import jsonify
-
+from src.models.error_type import ErrorManager, ErrorTypes
 from src.models.user import User, get_user
 from src.spicy.spicy_room_data import SpicyRoomData
 
-from src.game_room_service_map import get_room_service_map
 
 # In-memory data store ("bound" can be extended in case of new game types)
-TGameRoom = TypeVar('TGameRoom', bound= SpicyRoomData)
+TGameRoom = TypeVar('TGameRoom', bound=SpicyRoomData)
 # noinspection PyTypeHints
 data_store: dict[str, TGameRoom] = {}
 
@@ -18,31 +17,22 @@ def get_data_store() -> dict[str, TGameRoom]:
     return data_store
 
 
-def get_room_data(room_id: str):
-    room_id = room_id.upper()
-    if data_store.get(room_id) is None:
-        raise Exception(f"Room {room_id} does not exist")
-    return data_store.get(room_id)
-
-
 async def create_lobby(data, connection):
+    from src.game_room_service_map import get_room_service_map
     # Check if the user is authenticated
     if not connection.get('user_id'):
-        await connection.get('connection').send(jsonify({"type": "error", "message": "User not connected"}))
+        await connection.get('connection').send(json.dumps(ErrorManager(ErrorTypes.USER_NOT_AUTHENTICATED).msg()))
         return
 
         # Check if the user is existing
     user = get_user(connection.get('user_id'))
     if not user:
-        await connection.get('connection').send(json.dumps({"type": "error", "message": "User does not exist"}))
+        await connection.get('connection').send(json.dumps(ErrorManager(ErrorTypes.USER_NOT_AUTHENTICATED).msg()))
         return
 
     # Max 100 rooms
     if len(data_store) >= 100:
-        await connection.get('connection').send(json.dumps({"type": "error", "message": "Maximum number of rooms reached"}))
-        return
-    # Check if the room is public
-    is_public = data.get('isPublic', False)
+        await connection.get('connection').send(json.dumps(ErrorManager(ErrorTypes.MAX_ROOMS_REACHED).msg()))
 
     # Generate a unique room ID
     while True:
@@ -53,43 +43,41 @@ async def create_lobby(data, connection):
     # Create a new room
     match data['game']:
         case "spicy":
-            data_store[room_id] = SpicyRoomData(public=is_public)
+            data_store[room_id] = SpicyRoomData()
         case _:
-            await connection.get('connection').send(jsonify({"type": "error", "message": "Game does not exist"}))
+            await connection.get('connection').send(json.dumps(ErrorManager(ErrorTypes.INVALID_GAME_TYPE).msg()))
             return
 
     data_store[room_id].add_player(user.get("id"), user.get("name"))
 
     room_service = get_room_service_map().get(type(data_store[room_id]))
-    if room_service is None:
-        raise Exception(f"No room service registered for room type {type(data_store[room_id]).__name__}")
 
-    await connection.get('connection').send(json.dumps({"type": "createLobby", "roomId": room_id}))
+    await connection.get('connection').send(json.dumps({"type": "roomCreated", "room_id": room_id}))
     await room_service.update_all_users(data_store[room_id])
 
+
+def get_room_data(room_id: str):
+    room_id = room_id.upper()
+    if data_store.get(room_id) is None:
+        raise (ErrorManager(ErrorTypes.ROOM_NOT_FOUND))
+    return data_store.get(room_id)
+
+
 async def join_lobby(data, connection):
+    from src.game_room_service_map import get_room_service_map
+
     try:
         # Check user and room
         user = get_user(connection.get('user_id'))
-        if not user:
-            await connection.get('connection').send(json.dumps({"type": "error", "message": "User not authenticated"}))
-            return
-
-        room_id = data.get('roomId') or data.get('room_id')
-        if not room_id:
-            raise Exception("Room ID is required")
-
-        room_data = get_room_data(room_id)
+        room_data = get_room_data(data.get('room_id'))
         room_service = get_room_service_map().get(type(room_data))
-        if room_service is None:
-            raise Exception(f"No room service registered for room type {type(room_data).__name__}")
 
         # Reconnect: Update player if already in the room
         if room_data.is_player_joined(user.get("id")):
             game_type = get_game_type_from_room(room_data)
-            print("type", game_type)
+
             await connection.get('connection').send(
-                json.dumps({"type": "join", "roomId": room_id, "gameType": game_type}))
+                json.dumps({"type": "join", "room_id": data.get('room_id'), "game_type": game_type}))
             await room_service.update_all_users(room_data, user.get("id"))
             return
 
@@ -98,12 +86,16 @@ async def join_lobby(data, connection):
         game_type = get_game_type_from_room(room_data)
 
         await connection.get('connection').send(
-            json.dumps({"type": "join", "roomId": room_id, "gameType": game_type}))
+            json.dumps({"type": "join", "room_id": data.get('room_id'), "game_type": game_type}))
         await room_service.update_all_users(room_data)
 
+    except ErrorManager as e:
+        await connection.get('connection').send(
+            json.dumps(e.msg()))
     except Exception as e:
         await connection.get('connection').send(
             json.dumps({"type": "error", "message": str(e)}))
+
 
 def get_game_type_from_room(room_data) -> str:
     room_type = type(room_data).__name__.replace("RoomData", "")

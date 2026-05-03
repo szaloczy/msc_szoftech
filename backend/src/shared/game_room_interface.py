@@ -5,7 +5,7 @@ from typing import Optional
 
 class GameRoomInterface(ABC):
 
-    def __init__(self):
+    def __init__(self, public: bool = False):
         self.points: dict[str, int] = {}
         self.turns: list[str] = []
         self.current_turn: Optional[str] = None

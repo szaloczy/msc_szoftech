@@ -1,0 +1,39 @@
+from enum import Enum
+
+class ErrorTypes(Enum):
+    NOT_ENOUGH_CARDS = "NOT_ENOUGH_CARDS"
+    NOT_ENOUGH_PLAYERS = "NOT_ENOUGH_PLAYERS"
+    PLAYER_IS_NOT_IN_ROOM = "PLAYER_IS_NOT_IN_ROOM"
+    PLAYER_ALREADY_READY = "PLAYER_ALREADY_READY"
+    ROOM_NOT_FOUND = "ROOM_NOT_FOUND"
+    NO_MORE_ROOM = "NO_MORE_ROOM"
+    MAX_ROOMS_REACHED = "MAX_ROOMS_REACHED"
+    INVALID_PLAYER = "INVALID_PLAYER"
+    GAME_ALREADY_STARTED = "GAME_ALREADY_STARTED"
+    NO_USER_PROVIDED = "NO_USER_PROVIDED"
+    NO_ROOM_PROVIDED = "NO_ROOM_PROVIDED"
+    USER_NOT_AUTHENTICATED = "USER_NOT_AUTHENTICATED"
+    AOW_GAME_FINISHED = "AOW_GAME_FINISHED"
+    AOW_NEED_TWO_CARDS = "AOW_NEED_TWO_CARDS"
+    AOW_SETTINGS_NOT_FOUND = "AOW_SETTINGS_NOT_FOUND"
+    INVALID_GAME_TYPE = "INVALID_GAME_TYPE"
+    NOT_YOUR_TURN = "NOT_YOUR_TURN"
+    SELECTED_CARD_NOT_IN_YOUR_HAND = "SELECTED_CARD_NOT_IN_YOUR_HAND"
+    MISSING_DATA = "MISSING_DATA"
+    LIAR_CHECK_ALREADY_IN_PROGRESS = "LIAR_CHECK_ALREADY_IN_PROGRESS"
+    CANNOT_CALL_LIAR_WHEN_PILE_SIZE_IS_EMPTY = "CANNOT_CALL_LIAR_WHEN_PILE_SIZE_IS_EMPTY"
+    CANNOT_CALL_LIAR_ON_YOUR_OWN_CARDS = "CANNOT_CALL_LIAR_ON_YOUR_OWN_CARDS"
+    INVALID_LIAR_TYPE = "INVALID_LIAR_TYPE"
+
+class ErrorManager(Exception):
+    def __init__(self, my_error_type: ErrorTypes, data: dict = None):
+        self.type = my_error_type
+        self.data = data or {}
+
+    def msg(self):
+        print("Error occurred", self.type.value, self.data)
+        return {
+            "type": "error",
+            "message": self.type.value,
+            "data": self.data
+        }

@@ -1,14 +1,16 @@
 from typing import Optional
 
-from shared.game_room_interface import GameRoomInterface
-from spicy.spicy_deck import SpicyDeck, SpicyCardType
+from src.models.error_type import ErrorManager, ErrorTypes
+from src.shared.game_room_interface import GameRoomInterface
+from src.spicy.spicy_deck import SpicyDeck, SpicyCardType
 
 SPICY_NUMBER_OF_MAX_PLAYERS = 6
+SPICY_NUMBER_OF_TROPHY_CARDS = 3
 
 class SpicyRoomData(GameRoomInterface):
 
     def __init__(self, public: bool = False):
-        super().__init__()
+        super().__init__(public)
         self.max_players: int = SPICY_NUMBER_OF_MAX_PLAYERS
         self.deck: SpicyDeck = SpicyDeck()
         self.player_cards: dict[str, list[tuple[SpicyCardType, int]]] = {}
@@ -17,6 +19,7 @@ class SpicyRoomData(GameRoomInterface):
         self.placed_card_owner: Optional[str] = None
         self.pile_size: int = 0
         self.liar_caller: Optional[str] = None
+        self.plus_ten_cards: int = SPICY_NUMBER_OF_TROPHY_CARDS
         self.turnNames: list[str] = []
         self.points = {},
 
@@ -40,7 +43,7 @@ class SpicyRoomData(GameRoomInterface):
         
     def add_player(self, player_id: str, name: str):
         if len(self.turns) >= self.max_players:
-            raise Exception("Maximum number of players reached")
+            raise ErrorManager(ErrorTypes.NO_MORE_ROOM)
         self.turns.append(player_id)
         self.turnNames.append(name)
 
