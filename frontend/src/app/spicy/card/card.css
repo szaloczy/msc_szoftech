@@ -1,0 +1,159 @@
+.card {
+  position: relative;
+  width: 140px;
+  height: 200px;
+  border: 2px solid #000;
+  border-radius: 12px;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: all 0.3s;
+
+  .card-padding {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: 5px;
+  }
+
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    border: 3px solid var(--suit-color, #888);
+    border-radius: 7px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+    background-clip: padding-box;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .card-corner.card-corner-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1px 4px;
+    border-radius: 0 0 0 5px;
+    background: #fff;
+    border: 1.5px solid #222;
+    border-top: none;
+    border-left: none;
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .card-suit {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #222;
+    background-color: var(--suit-color, #888);
+  }
+
+  .card-number {
+    color: #222;
+    font-weight: 700;
+    margin-left: 2px;
+  }
+
+  &.selected {
+    z-index: 3;
+    transform: translateY(-10px) scale(1.1);
+    background-color: #f0f8ff;
+  }
+
+  &.normal {
+    margin-left: -87px;
+    background-color: #eee;
+  }
+
+  .send-button {
+    margin-top: 12px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .send-button:disabled {
+     cursor: not-allowed !important;
+      opacity: 0.6 !important;
+      background-color: #cccccc !important;
+      color: #666666 !important;
+  }
+
+  .send-button:hover {
+    background-color: #0056b3;
+  }
+
+  .card-form {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+  }
+
+  .card-form select,
+  .card-form button.send-button {
+    width: 100%;
+    border-radius: 6px;
+    font-size: 16px;
+  }
+
+  .card-form select {
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    appearance: none;
+    opacity: 0.7;
+  }
+
+  .card-form button.send-button {
+    margin-top: 8px;
+    padding: 8px 12px;
+    border: none;
+    font-weight: bold;
+    color: white;
+    background-color: #007bff;
+    cursor: pointer;
+  }
+
+  .card-form button.send-button:hover {
+    background-color: #0056b3;
+  }
+
+  &[data-suit='pepper'] {
+    --suit-color: #1976d2;
+  }
+  &[data-suit='chili'] {
+    --suit-color: #d32f2f;
+  }
+  &[data-suit='wasabi'] {
+    --suit-color: #388e3c;
+  }
+}
+
+@media (max-width: 1200px) {
+  .card {
+    width: 120px;
+    height: 160px;
+    border-radius: 8px;
+  }
+  .card-padding {
+    border-radius: 7px;
+    padding: 3px;
+  }
+  .card-inner {
+    border-radius: 5px;
+  }
+}

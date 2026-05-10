@@ -25,7 +25,6 @@ class SpicyRoomService(GameRoomService):
             "liarCaller": room.liar_caller,
             "plusTenCards": room.plus_ten_cards,
             "playerReady": room.player_ready,
-            "points": room.get_sorted_stats()
         }
 
     @staticmethod

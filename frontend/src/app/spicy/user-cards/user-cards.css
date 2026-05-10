@@ -1,0 +1,38 @@
+.user-cards {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
+  max-height: 30vh;
+  min-height: 30%;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-overflow-scrolling: inherit;
+}
+
+.app-card {
+  width: calc(33.33% - 10px);
+  height: auto;
+  box-sizing: border-box;
+}
+
+@media screen and (max-width: 1200px) {
+  .user-cards {
+    padding-top: 50px;
+  }
+}
+
+@media screen and (max-width: 900px) and (max-height: 450px) and (orientation: landscape) {
+  .user-cards {
+    max-height: 100%;
+    height: 100%;
+    max-width: 40%;
+    left:60%
+  }
+}
