@@ -7,7 +7,6 @@ from typing import TypedDict
 class User(TypedDict):
     id: str
     name: str
-    lobby_leader: bool = False
 
 users:list[User] = []
 
@@ -58,5 +57,9 @@ async def set_user_to_connection(data, client):
             json.dumps({"type": "Auth", "success": False, "message": "User not found", "user_id": None}))
         await client['connection'].send(
             json.dumps(e.msg()))
+
+def handle_user_auth_message(ws_data):
+    if ws_data.get("user_id"):
+        print(f"User {ws_data.get("user_id")} authenticated")
 
 

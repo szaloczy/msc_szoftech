@@ -1,5 +1,5 @@
 import z from "zod";
-import { CardSchema } from "./types_spicy";
+import { CardSchema, CardSuit } from "./types_spicy";
 
 export interface GameMode {
     id: string;
@@ -27,14 +27,14 @@ export const websocketMessageSchemaTypes = {
         user_id: z.string().optional().nullable(),
         user_name: z.string().optional()
     }),
-    createLobby: z.object({
-    type: z.literal('createLobby'),
-    roomId: z.string()
+    lobbyCreated: z.object({
+      type: z.literal('lobbyCreated'),
+      room_id: z.string()
     }),
     join: z.object({
         type: z.literal('join'),
-        roomId: z.string(),
-        gameType: z.enum(['spicy'])
+        room_id: z.string(),
+        game_type: z.enum(['spicy'])
     }),
     roomData: z.object({
     type: z.literal('roomData'),
@@ -50,6 +50,36 @@ export const websocketMessageSchemaTypes = {
     liarCaller: z.string().nullable(),
     plusTenCards: z.number(),
     playerReady: z.array(z.string()).nullable()
+  }),
+  placeCard: z.object({
+    type: z.literal('placeCard'),
+    roomId: z.string(),
+    userId: z.string(),
+    selectedCard: z.tuple([z.nativeEnum(CardSuit), z.number()]),
+    liedCard: z.tuple([z.nativeEnum(CardSuit), z.number()])
+  }),
+  liarCalled: z.object({
+    type: z.literal('liarCalled'),
+    liarCaller: z.string()
+  }),
+  liarCalledFinished: z.object({
+    type: z.literal('liarCalledFinished')
+  }),
+  newCards: z.object({
+    type: z.literal('newCards'),
+    allCards: z.array(CardSchema),
+    newCards: z.array(CardSchema)
+  }),
+  turnChange: z.object({
+    type: z.literal('turnChange'),
+    currentTurn: z.string(),
+    playerCards: z.record(z.string(), z.number()),
+    currentLiedCard: CardSchema.nullable(),
+    pileSize: z.number(),
+    deckSize: z.number(),
+    placedCardOwner: z.string().nullable(),
+    liarCaller: z.string().nullable(),
+    plusTenCards: z.number()
   }),
 }
 

@@ -52,7 +52,8 @@ async def create_lobby(data, connection):
 
     room_service = get_room_service_map().get(type(data_store[room_id]))
 
-    await connection.get('connection').send(json.dumps({"type": "roomCreated", "room_id": room_id}))
+    print(f"Lobby created with room_id: {room_id}")
+    await connection.get('connection').send(json.dumps({"type": "lobbyCreated", "room_id": room_id}))
     await room_service.update_all_users(data_store[room_id])
 
 

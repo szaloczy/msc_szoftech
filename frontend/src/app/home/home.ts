@@ -50,9 +50,11 @@ export class Home implements OnInit, OnDestroy {
       });
     }
 
-    this.loobyCreateSub = this.websocketService.messageHandlers['createLobby'].subscribe(
-      (message: WebSocketMessageTypes['createLobby']) => {
-        this.roomId = message.roomId;
+    this.loobyCreateSub = this.websocketService.messageHandlers['lobbyCreated'].subscribe(
+      (message: WebSocketMessageTypes['lobbyCreated']) => {
+        localStorage.setItem('roomId', message.room_id);
+        console.log('Lobby created with room ID:', message.room_id);
+        this.roomId = message.room_id;
         if (this.roomId) {
           localStorage.setItem('roomId', this.roomId);
           this.router.navigate([`/${this.selectedGameKey}/${this.roomId}`]);
@@ -82,6 +84,7 @@ export class Home implements OnInit, OnDestroy {
 
   joinRoom() {
     this.pendingAction = 'join';
+    console.log('Attempting to join room with ID:', this.roomId);
     if (this.isAuthenticated) {
       this.websocketService.sendMessage({
         type: 'joinLobby',
@@ -90,9 +93,9 @@ export class Home implements OnInit, OnDestroy {
 
       this.websocketService.messageHandlers.join.subscribe({
         next: (data) => {
-          const gameType = data.gameType;
+          const gameType = data.game_type;
           console.log('Joining lobby:', data, gameType);
-          const roomId = data.roomId;
+          const roomId = data.room_id;
           console.log('Navigating to room:', roomId, gameType);
           this.router.navigate([`/${gameType}/${roomId}`]);
           this.showPromptDialog = false;

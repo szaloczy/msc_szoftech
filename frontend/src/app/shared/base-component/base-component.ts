@@ -13,7 +13,7 @@ export abstract class BaseComponent implements OnDestroy {
     this.activetedRoute.paramMap.subscribe(params => {
       this.roomId = params.get('roomId') ?? '';
       if (this.roomId) {
-        this.webSocketService.sendMessage({ type: 'roomJoin', room_id: this.roomId });
+        this.webSocketService.sendMessage({ type: 'joinLobby', room_id: this.roomId });
       } else {
         this.router.navigate(['/home']);
       }
