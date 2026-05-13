@@ -61,6 +61,10 @@ export class Board extends BaseComponent implements OnInit {
         }));
 
         this.playerPositions = getCustomArray(Object.keys(message.playerCards).length);
+        this.checkLiarChoiceButtonActive();
+        this.checkLiarButtonDisabled();
+        this.checkCardPlaceDisabled();
+        this.triggerRefresh();
       }, this);
   }
 
@@ -75,6 +79,7 @@ export class Board extends BaseComponent implements OnInit {
     return 0;
   }
 
+
   startGame() {
     const roomId = this.activatedRoute.snapshot.params['roomId'];
     const userId = JSON.parse(this.currentUser).id;
@@ -84,6 +89,72 @@ export class Board extends BaseComponent implements OnInit {
     this.spicyService.startGame(roomId, userId).subscribe();
   }
 
+   triggerRefresh() {
+    if (this.players)
+      for (let i = 0; i < this.players.length; i++) {
+        this.names[i] = this.getPlayerNameAtPosition(i);
+        this.card_numbers[i] = this.getPlayerCardsAtPosition(i);
+      }
+  }
+
+  checkLiarButtonDisabled() {
+    const myUserId = localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')!).id : null;
+    const currentTurn = this.roomData?.currentTurn;
+    const turns = this.roomData?.turns;
+
+    if (!currentTurn || !turns?.length) {
+      this.isLiarButtonDisabled = true;
+      return;
+    }
+
+    if (this.liarCaller != null) {
+      this.isLiarButtonDisabled = true;
+      return;
+    }
+
+    if (this.pileSize > 0) {
+      const isMyCard = myUserId === this.placedCardOwner;
+      const isAlreadyCalled = this.liarCaller != null;
+
+      this.isLiarButtonDisabled = isMyCard || isAlreadyCalled;
+      return;
+    }
+
+    this.isLiarButtonDisabled = true;
+  }
+
+  navigateToCredits() {
+    this.router.navigate(['/credits']);
+  }
+
+  checkCardPlaceDisabled() {
+    let isDisabled = false;
+
+    if (this.liarCaller !== null) {
+      isDisabled = true;
+    }
+
+    if (this.currentTurn !== this.userId) {
+      isDisabled = true;
+    }
+
+    this.isliarActive = isDisabled;
+  }
+
+  checkLiarChoiceButtonActive() {
+    if (this.liarCaller == this.userId) {
+      this.showLiarChoice = true;
+    } else {
+      this.showLiarChoice = false;
+    }
+  }
+
+  getCardImage(card: SpicyCard): string {
+    const [suit, value] = card;
+    const suitStr = suit.toString().toLowerCase();
+    return 'images/spicy/' + suitStr + '-' + value + '.png';
+  }
+
 
   lieCalled() {
     //TODO: Implement lie called logic
@@ -91,8 +162,13 @@ export class Board extends BaseComponent implements OnInit {
   }
 
   passTurn() {
-    //TODO: Implement pass turn logic
-    return;
+    if (this.currentTurn !== this.userId) {
+      return;
+    }
+    this.webSocketService.sendMessage({
+      type:'nextTurn',
+      roomId:this.roomId
+    });
   }
 
   getPlayerNameAtPosition(position: number): string {

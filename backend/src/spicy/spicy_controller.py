@@ -6,7 +6,7 @@ spicy_game_controller = Blueprint('game_controller', __name__)
 
 @spicy_game_controller.route('/api/startgame', methods=['POST'])
 async def start_game_endpoint():
-    player_id =request.get_json().get('userId')
+    player_id = request.get_json().get('userId')
     room_id = request.get_json().get('roomId')
 
     if not player_id:
@@ -17,7 +17,7 @@ async def start_game_endpoint():
 
     try:
         # Call the service to start the game
-        message =  await SpicyRoomService.start_game(player_id, room_id)
+        message = await SpicyRoomService.start_game(player_id, room_id)
         return jsonify({"message": message}), 200
     except Exception as e:
         return e.msg(), 400
