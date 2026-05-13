@@ -1,10 +1,9 @@
 import asyncio
-import json
 
 from src.models.error_type import ErrorManager, ErrorTypes
 from src.models.resource_keys import ResourceKeys
 from src.spicy.spicy_deck import SpicyCardType
-from src.services.data_store_service import get_room_data, get_room_id
+from src.services.data_store_service import get_room_data
 from src.shared.game_room_service_interface import GameRoomService
 from src.spicy.spicy_room_data import SpicyRoomData
 from src.webocket_controller import send_websocket_message

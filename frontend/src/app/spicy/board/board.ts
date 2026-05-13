@@ -66,6 +66,33 @@ export class Board extends BaseComponent implements OnInit {
         this.checkCardPlaceDisabled();
         this.triggerRefresh();
       }, this);
+
+      this.webSocketService.subscribeToMessage('turnChange', (message) => {
+      this.players = Object.entries(message.playerCards).map(([name, card_number]) => ({
+        name,
+        card_number
+      }));
+      this.pileSize = message.pileSize;
+      this.deckSize = message.deckSize;
+      this.remainingCards = message.deckSize;
+      this.currentTurn = message.currentTurn;
+      this.isMyTurn = message.currentTurn === this.userId;
+      this.playerPositions = getCustomArray(Object.keys(message.playerCards).length);
+      this.placedCardOwner = message.placedCardOwner ?? null;
+      this.liarCaller = message.liarCaller ?? null;
+
+      this.plusTenCards = message.plusTenCards ?? 0;
+
+      this.triggerRefresh();
+      this.checkLiarButtonDisabled();
+      this.checkCardPlaceDisabled();
+
+    }, this);
+
+    this.webSocketService.subscribeToMessage('newCards', (message) => {
+      this.yourCards = message.allCards;
+      this.triggerRefresh();
+    }, this);
   }
 
   getPlayerCardsAtPosition(position: number): number {

@@ -1,13 +1,17 @@
 from src.models.error_type import ErrorManager, ErrorTypes
+from src.services.data_store_service import get_room_data
 from src.spicy.spicy_deck import SpicyCardType
 from src.spicy.spicy_room_data import SpicyRoomData
-from src.spicy.spicy_room_service import SpicyRoomService, serialize_card
-from src.webocket_controller import send_websocket_message, broadcast_turn_change
+
 
 
 async def place_card(user_id: str,
                      selected_card: tuple[SpicyCardType, int], lied_card: tuple[SpicyCardType, int],
                      room_data: SpicyRoomData) -> None:
+    from src.spicy.spicy_room_service import SpicyRoomService
+    from src.webocket_controller import send_websocket_message, broadcast_turn_change
+
+    from src.spicy.spicy_room_service import serialize_card
     # 1. Turn checking
     if room_data.current_turn != user_id:
         await send_websocket_message(ErrorManager(ErrorTypes.NOT_YOUR_TURN).msg(), user_id)
@@ -63,11 +67,31 @@ async def place_card(user_id: str,
 
 
 def next_turn(spicy_data: SpicyRoomData, current_user_id: str) -> str:
-    pass
+    turns = spicy_data.turns
+    if current_user_id not in turns or len(turns) == 0:
+        return turns[0]
+    current_index = turns.index(current_user_id)
+    return turns[(current_index + 1) % len(turns)]
 
 
 async def handle_next_turn(data, client):
-    pass
+    """
+        When user pass its turn, it draws a new card and passes the turn to the next player.
+        Incoming 'nextTurn' message format:
+        {
+            "type": "nextTurn",
+            "roomId": <room_id>
+        }
+    """
+    from src.webocket_controller import send_websocket_message
+
+    user_id = client.get("user_id")
+    room_data: SpicyRoomData = get_room_data(data.get("roomId"))
+    if room_data.current_turn != user_id:
+        await send_websocket_message(ErrorManager(ErrorTypes.NOT_YOUR_TURN).msg(), user_id)
+        return
+
+    ##TODO: update new cards  -> newCards message will be sent to Fe (Try-catch) and update players
 
 
 async def handle_place_card(data, client):
@@ -80,7 +104,25 @@ async def handle_place_card(data, client):
             "liedCard": ["chili", 3]
         }
     """
-    pass
+    if not all([data.get("roomId"), client.get("user_id"), data.get("selectedCard"), data.get("liedCard")]):
+        from src.webocket_controller import send_websocket_message
+
+        await send_websocket_message(ErrorManager(ErrorTypes.MISSING_DATA).msg(), client["user_id"])
+        return
+
+    selected_card = convert_to_card_tuple(data.get("selectedCard"))
+    lied_card = convert_to_card_tuple(data.get("liedCard"))
+
+    room_data = get_room_data(data.get("roomId"))
+    try:
+        await place_card(
+            user_id=client.get("user_id"),
+            selected_card=selected_card,
+            lied_card=lied_card,
+            room_data=room_data,
+        )
+    except Exception as e:
+        print(f"Something went wrong with placeCard: {str(e)}")
 
 
 

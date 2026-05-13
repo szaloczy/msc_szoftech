@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, Output } from '@angular/core';
 import { CardSuit, PlaceCardEvent, PlaceCardMessage, SpicyCard } from '../../types_spicy';
 import { WebSocketService } from '../../services/web-socket.service';
 import { ActivatedRoute } from '@angular/router';
@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './card.html',
   styleUrl: './card.css',
 })
-export class Card {
+export class Card implements OnChanges{
   webSocketService = inject(WebSocketService);
   activatedRoute = inject(ActivatedRoute);
 
@@ -36,6 +36,13 @@ export class Card {
       case CardSuit.Chili: return 'red';
       case CardSuit.Wasabi: return 'green';
       default: return 'gray';
+    }
+  }
+
+  ngOnChanges() {
+    if (this.suit && this.value) {
+      const suitStr = this.suit.toString().toLowerCase();
+      this.cardImageUrl = `spicy/${suitStr}-${this.value}.png`;
     }
   }
 

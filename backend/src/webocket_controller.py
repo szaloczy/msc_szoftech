@@ -9,6 +9,7 @@ from src.models.error_type import ErrorManager
 from src.models.lobby import leave_lobby
 from src.models.user import set_user_to_connection
 from src.services.data_store_service import join_lobby, create_lobby
+from src.services.spicy_card_placement_service import handle_place_card, handle_next_turn
 from src.spicy.spicy_room_data import SpicyRoomData
 
 
@@ -24,6 +25,8 @@ _message_handlers = {
     "joinLobby": join_lobby,
     "leaveLobby": leave_lobby,
     "createLobby": create_lobby,
+    "placeCard" : handle_place_card,
+    "nextTurn" : handle_next_turn
 }
 
 async def send_websocket_message(message, user_id, cls:Optional=None):

@@ -1,8 +1,7 @@
 import random
-from asyncio import InvalidStateError
-from typing import Any
 
-from websockets import InvalidState
+from typing import Any
+from src.models.error_type import ErrorManager, ErrorTypes
 
 
 class Deck:
@@ -21,10 +20,12 @@ class Deck:
         Raise an error if not enough cards are available.
         """
         if amount > len(self.deck_cards):
-            raise InvalidStateError
+            raise ErrorManager(
+                ErrorTypes.NOT_ENOUGH_CARDS,
+                data={"requested": amount, "available": len(self.deck_cards)}
+            )
 
-
-        # Draw the specified number of cards from the top of the deck_cards
+            # Draw the specified number of cards from the top of the deck_cards
         drawn_cards = self.deck_cards[:amount]
         self.deck_cards = self.deck_cards[amount:]  # Remove the drawn cards from the deck_cards
 
